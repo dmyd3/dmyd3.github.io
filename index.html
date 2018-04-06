@@ -5,8 +5,7 @@
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=edge"><![endif]-->
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.6.2">
-<meta name="author" content="Doc Writer">
-<title>Título do Documento</title>
+<title>Exercícios de PDI</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -428,180 +427,997 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article">
 <div id="header">
-<h1>Título do Documento</h1>
-<div class="details">
-<span id="author" class="author">Doc Writer</span><br>
-<span id="email" class="email"><a href="mailto:doc@example.com">doc@example.com</a></span><br>
-</div>
+<h1>Exercícios de PDI</h1>
 </div>
 <div id="content">
 <div id="preamble">
 <div class="sectionbody">
-<div id="_TOC_" class="paragraph">
+<div class="paragraph">
+<p>Doc Writer &lt;<a href="mailto:doc@example.com">doc@example.com</a>&gt;</p>
+</div>
+<div class="paragraph">
 <p>A simple <a href="http://asciidoc.org">AsciiDoc</a> document.</p>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introduction">Introduction</h2>
+<h2 id="_capítulo_3">Capítulo 3</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_3_1">Exercício 3.1</h3>
 <div class="paragraph">
-<p>A paragraph followed by a simple list with square bullets.</p>
-</div>
-<div class="ulist square">
-<ul class="square">
-<li>
-<p>item 1</p>
-</li>
-<li>
-<p>item 2</p>
-</li>
-</ul>
+<p>Nesse exercicio o objetivo era de pintar cada objeto com uma cor unica
+mesmo para uma situação onde existiam mais de 255 objetos.</p>
 </div>
 <div class="paragraph">
-<p>Here&#8217;s how you say &#8220;Hello, World!&#8221; in Prawn:</p>
+<p>Para solucionar isso
+foi usada uma imagem com 630 bolhas como objetos, e cada uma foi pintada com uma
+variação de Azul, Vermelho, ou Verde diferentes da seguinte forma.</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 1. Create a basic PDF document using Prawn</div>
+<div class="title">Listagem 1. Codigo 3.1 -Rotulaçao RGB</div>
 <div class="content">
-<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'prawn'
-
-Prawn::Document.generate 'example.pdf' do
-  text 'Hello, World!'
-end</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Exemplos inseridos por mim:</p>
-</div>
-<div id="img-bolhas" class="imageblock">
-<div class="content">
-<img src="bolhas.png" alt="Algumas Bolhas">
-</div>
-<div class="title">Figure 1. Bolhas a ser pintadas</div>
-</div>
-<div id="img-bigbolhas" class="imageblock">
-<div class="content">
-<img src="big-bolhas.png" alt="512" width="512">
-</div>
-<div class="title">Figure 2. Muitas Bolhas</div>
-</div>
-<div class="listingblock">
-<div class="title">Listagem 2. Um codigo exemplo c++</div>
-<div class="content">
-<pre class="highlight"><code class="language-c++" data-lang="c++">#include &lt;iostream&gt;
-#include &lt;opencv2/opencv.hpp&gt;
-
-//#include "neg_quadrantes.cpp"
-
-using namespace cv;
-using namespace std;
-
-int main(int, char**) {
-	Mat image;
-	Vec3b val;
-
-	image = imread("bolhas.png", CV_LOAD_IMAGE_GRAYSCALE);
-	if (!image.data)
-		cout &lt;&lt; "nao abriu bolhas.png" &lt;&lt; endl;
-
-	namedWindow("janela", WINDOW_AUTOSIZE);
-
-	for (int i = 200; i&lt;210; i++) {
-		for (int j = 10; j&lt;200; j++) {
-			image.at&lt;uchar&gt;(i, j) = 0;
-		}
-	}
-
-	imshow("janela", image);
-	waitKey();
-
-	image = imread("bolhas.png", CV_LOAD_IMAGE_COLOR);
-
-	val[0] = 0;   //B
-	val[1] = 0;   //G
-	val[2] = 255; //R
-
-	for (int i = 200; i&lt;210; i++) {
-		for (int j = 10; j&lt;200; j++) {
-			image.at&lt;Vec3b&gt;(i, j) = val;
-		}
-	}
-
-	imshow("janela", image);
-	waitKey();
-	//=============xxxxxxxxxx QUADRANTES x=x=x========--=-===
-	Mat invertido = imread("bolhas.png", CV_LOAD_IMAGE_GRAYSCALE);
-	uchar aux;
-
-	for (int l = 0; l &lt; invertido.rows; l++) {
-		for (int c = 0; c &lt; invertido.cols / 2; c++) {
-
-			aux = invertido.at&lt;uchar&gt;(l, c);
-
-			//Primeiro quadrante
-			if (l&lt;invertido.rows / 2) {
-				invertido.at&lt;uchar&gt;(l, c) = invertido.at&lt;uchar&gt;(l + invertido.rows / 2, c + invertido.cols / 2);
-				invertido.at&lt;uchar&gt;(l + invertido.rows / 2, c + invertido.cols / 2) = aux;
-			}
-			//Terceiro quadrante
-			else {
-				invertido.at&lt;uchar&gt;(l, c) = invertido.at&lt;uchar&gt;(l - invertido.rows / 2, c + invertido.cols / 2);
-				invertido.at&lt;uchar&gt;(l - invertido.rows / 2, c + invertido.cols / 2) = aux;
-			}
-		}
-	}
-	cout &lt;&lt; "Invertido funfou? /n";
-	namedWindow("Invertido", WINDOW_AUTOSIZE);
-	imshow("Invertido", invertido);
-	waitKey();
-	//=========xx=x=x=xxx=x=x=x=x===xxxx========xxxxx NEGATIVOS
-	image = imread("bolhas.png", CV_LOAD_IMAGE_GRAYSCALE);
-
-	Vec2i xp, yp;
-	cout &lt;&lt; "Insira os pontos do retangulo negativo, dimensoes:" &lt;&lt; image.rows &lt;&lt; " X " &lt;&lt; image.cols &lt;&lt; endl;
-	cin &gt;&gt; xp[0] &gt;&gt; xp[1] &gt;&gt; yp[0] &gt;&gt; yp[1];
-
-
-	for (int i = xp[0]; i &lt; yp[0]; i++) {
-		for (int j = xp[1]; j &lt; yp[1]; j++) {
-			image.at&lt;uchar&gt;(i, j) = 255 - image.at&lt;uchar&gt;(i, j);
-		}
-	}
-
-	imshow("janela", image);
-	waitKey();
-
-	return 0;
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#080;font-weight:bold">if</span> (nobjects &lt;= <span style="color:#00D">255</span>) { <span style="color:#777">//azul</span>
+        floodFill(image2, p, Scalar(tomB, <span style="color:#00D">0</span>, <span style="color:#00D">0</span>));
+        tomB++;
+}<span style="color:#080;font-weight:bold">else</span> <span style="color:#080;font-weight:bold">if</span>(nobjects&gt;<span style="color:#00D">255</span> &amp;&amp; nobjects&lt;<span style="color:#00D">510</span>){ <span style="color:#777">//vermelho</span>
+        floodFill(image2, p, Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, tomR));
+        tomR++;
+}
+<span style="color:#080;font-weight:bold">else</span> <span style="color:#080;font-weight:bold">if</span> (nobjects &gt;= <span style="color:#00D">510</span>) { <span style="color:#777">//verde</span>
+        floodFill(image2, p, Scalar(<span style="color:#00D">0</span>, tomG, <span style="color:#00D">0</span>));
+        tomG++;
 }</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>oioioi</p>
+<p>O código percorre a imagem procurando bolhas na cor branca, conta os objetos e
+as pinta.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="31_labelingRGB.png" alt="RotRGB" width="450">
+</div>
+<div class="title">Figure 1. Rotulaçao RGB</div>
+</div>
+<div class="paragraph">
+<p>Segue o codigo completo 3-1:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 2. Codigo 3.1 -Rotulaçao RGB</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+
+<span style="color:#777">//situaçao que existem 255 objetos</span>
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argc, <span style="color:#0a8;font-weight:bold">char</span>** argv){
+Mat image, image2, mask;
+<span style="color:#0a8;font-weight:bold">int</span> width, height;
+<span style="color:#0a8;font-weight:bold">int</span> nobjects,nob255,cont=<span style="color:#00D">0</span>;
+Vec3b val;
+
+CvPoint p;
+image = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">big-bolhas.png</span><span style="color:#710">&quot;</span></span>,CV_LOAD_IMAGE_GRAYSCALE);
+image2 = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">big-bolhas.png</span><span style="color:#710">&quot;</span></span>, CV_LOAD_IMAGE_COLOR);
+
+<span style="color:#080;font-weight:bold">if</span>(!image.data){
+std::cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">imagem nao carregou corretamente</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>;
+<span style="color:#080;font-weight:bold">return</span>(-<span style="color:#00D">1</span>);
+}
+width=image.size().width;
+height=image.size().height;
+
+p.x=<span style="color:#00D">0</span>;
+p.y=<span style="color:#00D">0</span>;
+
+<span style="color:#777">// busca objetos com buracos presentes</span>
+nobjects=<span style="color:#00D">0</span>;
+<span style="color:#0a8;font-weight:bold">int</span> tomR = <span style="color:#00D">1</span>, tomB = <span style="color:#00D">1</span>, tomG = <span style="color:#00D">1</span>, tomCinza=<span style="color:#00D">0</span>;
+val[<span style="color:#00D">0</span>] = <span style="color:#00D">255</span>;   <span style="color:#777">//B</span>
+val[<span style="color:#00D">1</span>] = <span style="color:#00D">255</span>;   <span style="color:#777">//G</span>
+val[<span style="color:#00D">2</span>] = <span style="color:#00D">255</span>; <span style="color:#777">//R</span>
+
+<span style="color:#080;font-weight:bold">for</span>(<span style="color:#0a8;font-weight:bold">int</span> i=<span style="color:#00D">0</span>; i&lt;height; i++){
+        <span style="color:#080;font-weight:bold">for</span>(<span style="color:#0a8;font-weight:bold">int</span> j=<span style="color:#00D">0</span>; j&lt;width; j++){
+                <span style="color:#080;font-weight:bold">if</span>(image2.at&lt;Vec3b&gt;(i,j) == val){
+                        <span style="color:#777">// achou um objeto</span>
+                        nobjects++;
+                        p.x=j;
+                        p.y=i;
+
+                        nob255 = nobjects;
+                        floor(nobjects / <span style="color:#00D">255</span>);
+
+                        floodFill(image2, p, Scalar(<span style="color:#00D">255</span>,<span style="color:#00D">0</span>,<span style="color:#00D">0</span>));
+                        <span style="color:#080;font-weight:bold">if</span> (nobjects &lt;= <span style="color:#00D">255</span>) { <span style="color:#777">//azul</span>
+                                floodFill(image2, p, Scalar(tomB, <span style="color:#00D">0</span>, <span style="color:#00D">0</span>));
+                                tomB++;
+                        }<span style="color:#080;font-weight:bold">else</span> <span style="color:#080;font-weight:bold">if</span>(nobjects&gt;<span style="color:#00D">255</span> &amp;&amp; nobjects&lt;<span style="color:#00D">510</span>){ <span style="color:#777">//vermelho</span>
+                                floodFill(image2, p, Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, tomR));
+                                tomR++;
+                        }
+                        <span style="color:#080;font-weight:bold">else</span> <span style="color:#080;font-weight:bold">if</span> (nobjects &gt;= <span style="color:#00D">510</span>) { <span style="color:#777">//azul</span>
+                                floodFill(image2, p, Scalar(<span style="color:#00D">0</span>, tomG, <span style="color:#00D">0</span>));
+                                tomG++;
+                        }
+                }
+        }
+}
+
+cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">No de objetos encontrados: </span><span style="color:#710">&quot;</span></span> &lt;&lt; nobjects;
+cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#D20">Numero de vezes q era 255: </span><span style="color:#710">&quot;</span></span> &lt;&lt; cont;
+
+imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">image</span><span style="color:#710">&quot;</span></span>, image2);
+imwrite(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">labelingRGB.png</span><span style="color:#710">&quot;</span></span>, image2);
+waitKey();
+
+<span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exercício_3_2">Exercício 3.2</h3>
+<div class="paragraph">
+<p>Nesse exercício o objetivo era de contar as bolhas e preencher seus buracos
+suportando objetos com mais de um buraco.</p>
+</div>
+<div class="paragraph">
+<p>Primeiramente precisamos eliminar os objetos nas bordas e pintalos com a mesma
+cor do fundo da seguinte forma.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 3. Codigo 3.2 -Bordas</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//elimina bolhas nas bordas</span>
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;height; i++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> j = <span style="color:#00D">0</span>; j&lt;width; j++) {
+                        <span style="color:#080;font-weight:bold">if</span>(i==<span style="color:#00D">0</span> || i==height-<span style="color:#00D">1</span> || j==<span style="color:#00D">0</span> || j==width-<span style="color:#00D">1</span>)
+                        <span style="color:#080;font-weight:bold">if</span> (image.at&lt;uchar&gt;(i, j) == <span style="color:#00D">255</span>) {
+                                <span style="color:#777">// achou um objeto</span>
+                                bordas++;
+                                p.x = j;
+                                p.y = i;
+                                floodFill(image, p, <span style="color:#00D">0</span>);
+                        }
+                }
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Depois disso o código pinta o fundo de uma cor diferente de preto e conta
+o número de objetos presente.
+Como sabemos que o fundo e os buracos eram os únicos pixels de cor de valor
+zero(preta),
+agora que o fundo foi pintado o programa irá procurar e contar os buracos da
+seguinte forma:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 4. Codigo 3.2 -Contando Furos</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//busca furos de valor Zero</span>
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;height; i++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> j = <span style="color:#00D">0</span>; j&lt;width; j++) {
+                        <span style="color:#080;font-weight:bold">if</span> (image.at&lt;uchar&gt;(i, j) == <span style="color:#00D">0</span>) {
+                                <span style="color:#777">// achou um objeto</span>
+                                furos++;
+                                p.x = j;
+                                p.y = i;
+                                floodFill(image, p, <span style="color:#00D">1</span>);
+                        }
+                }
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Então obteremos a seguinte saída com a contagem dos objetos e imagem pintada:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="32_saida.png" alt="Holes">
+</div>
+<div class="title">Figure 2. Contando buracos</div>
+</div>
+<div class="paragraph">
+<p>Segue o codigo completo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 5. Codigo 3.2 -Contando Furos</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argc, <span style="color:#0a8;font-weight:bold">char</span>** argv){
+        Mat image, mask;
+        <span style="color:#0a8;font-weight:bold">int</span> width, height;
+        <span style="color:#0a8;font-weight:bold">int</span> nobjects,bordas=<span style="color:#00D">0</span>, furos=<span style="color:#00D">0</span>;
+
+        CvPoint p;
+        image = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">bolhas.png</span><span style="color:#710">&quot;</span></span>,CV_LOAD_IMAGE_GRAYSCALE);
+
+        <span style="color:#080;font-weight:bold">if</span>(!image.data){
+                std::cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">imagem nao carregou corretamente</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>;
+        <span style="color:#080;font-weight:bold">return</span>(-<span style="color:#00D">1</span>);
+        }
+        width=image.size().width;
+        height=image.size().height;
+
+        p.x=<span style="color:#00D">0</span>;
+        p.y=<span style="color:#00D">0</span>;
+
+        <span style="color:#777">//elimina bolhas nas bordas</span>
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;height; i++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> j = <span style="color:#00D">0</span>; j&lt;width; j++) {
+                        <span style="color:#080;font-weight:bold">if</span>(i==<span style="color:#00D">0</span> || i==height-<span style="color:#00D">1</span> || j==<span style="color:#00D">0</span> || j==width-<span style="color:#00D">1</span>)
+                        <span style="color:#080;font-weight:bold">if</span> (image.at&lt;uchar&gt;(i, j) == <span style="color:#00D">255</span>) {
+                                <span style="color:#777">// achou um objeto</span>
+                                bordas++;
+                                p.x = j;
+                                p.y = i;
+                                floodFill(image, p, <span style="color:#00D">0</span>);
+                        }
+                }
+        }
+        <span style="color:#777">//muda a cor do fundo</span>
+        p.x = <span style="color:#00D">0</span>;
+        p.y = <span style="color:#00D">0</span>;
+        floodFill(image, p, <span style="color:#00D">50</span>);
+
+        <span style="color:#777">// busca objetos</span>
+        nobjects=<span style="color:#00D">0</span>;
+        <span style="color:#080;font-weight:bold">for</span>(<span style="color:#0a8;font-weight:bold">int</span> i=<span style="color:#00D">0</span>; i&lt;height; i++){
+                <span style="color:#080;font-weight:bold">for</span>(<span style="color:#0a8;font-weight:bold">int</span> j=<span style="color:#00D">0</span>; j&lt;width; j++){
+                        <span style="color:#080;font-weight:bold">if</span>(image.at&lt;uchar&gt;(i,j) == <span style="color:#00D">255</span>){
+                                <span style="color:#777">// achou um objeto</span>
+                                nobjects++;
+                                p.x=j;
+                                p.y=i;
+                                floodFill(image,p,<span style="color:#00D">254</span>);
+                        }
+                }
+        }
+
+        <span style="color:#777">//busca furos de valor Zero</span>
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;height; i++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> j = <span style="color:#00D">0</span>; j&lt;width; j++) {
+                        <span style="color:#080;font-weight:bold">if</span> (image.at&lt;uchar&gt;(i, j) == <span style="color:#00D">0</span>) {
+                                <span style="color:#777">// achou um objeto</span>
+                                furos++;
+                                p.x = j;
+                                p.y = i;
+                                floodFill(image, p, <span style="color:#00D">1</span>);
+                        }
+                }
+        }
+
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">No de objetos encontrados: </span><span style="color:#710">&quot;</span></span> &lt;&lt; nobjects;
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#D20">Bolhas nas bordas : </span><span style="color:#710">&quot;</span></span> &lt;&lt; bordas;
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#D20">Furos nas bolhas: </span><span style="color:#710">&quot;</span></span> &lt;&lt; furos;
+
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">image</span><span style="color:#710">&quot;</span></span>, image);
+        imwrite(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">bolhas-buracos3.png</span><span style="color:#710">&quot;</span></span>, image);
+        waitKey();
+
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_capitulo_4">Capitulo 4</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_4_1_equalização">Exercício 4.1 - Equalização</h3>
+<div class="paragraph">
+<p>Neste exercício uma imagem em escala de cinza será equalizada
+e então será destacado a diferença entre a imagem original e nova.</p>
+</div>
+<div class="paragraph">
+<p>Primeiramente convertemos a imagem colorida para grayscale e então
+a equalizamos através da função <strong>cv::equalizeHist</strong> da seguinte forma:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 6. Codigo 4.1 -Equalização</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//Converte a imagem para cinza e equaliza</span>
+        cvtColor(image, grayimage, CV_BGR2GRAY);
+        equalizeHist(grayimage, eqimage);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Depois criamos os histogramas das imagens seguindo os passos do
+código base histograms.cpp e geramos o seguinte resultado:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="41_equalizaçao_hists.png" alt="Eq_hists">
+</div>
+<div class="title">Figure 3. Imagem original á esquerda e equalizada á direita</div>
+</div>
+<div class="paragraph">
+<p>Notamos que o histograma da imagem original(de cor amarela) tem uma
+quantidade de pixels concentrada por volta do valor 128, e que o
+histograma da imagem equalizada (de cor vermelha) tem seus valores
+melhores distribuídos.
+E olhando para as imagens percebe-se que a imagem equalizada realçou mais
+os detalhes da figura.</p>
+</div>
+<div class="paragraph">
+<p>Segue o código completo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 7. Codigo 4.1 -Equalização de Histogramas</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argc, <span style="color:#0a8;font-weight:bold">char</span>** argv) {
+        Mat image, eqimage, grayimage;
+        <span style="color:#0a8;font-weight:bold">int</span> width, height;
+        VideoCapture cap;
+        vector&lt;Mat&gt; planes, planesP, planesEq;
+        Mat histP, histEq;
+        <span style="color:#0a8;font-weight:bold">int</span> nbins = <span style="color:#00D">64</span>;
+        <span style="color:#0a8;font-weight:bold">float</span> range[] = { <span style="color:#00D">0</span>, <span style="color:#00D">256</span> };
+        <span style="color:#088;font-weight:bold">const</span> <span style="color:#0a8;font-weight:bold">float</span> *histrange = { range };
+        <span style="color:#0a8;font-weight:bold">bool</span> uniform = <span style="color:#069">true</span>;
+        <span style="color:#0a8;font-weight:bold">bool</span> acummulate = <span style="color:#069">false</span>;
+
+        cap.open(<span style="color:#00D">0</span>);
+
+        <span style="color:#080;font-weight:bold">if</span> (!cap.isOpened()) {
+                cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">cameras indisponiveis</span><span style="color:#710">&quot;</span></span>;
+                <span style="color:#080;font-weight:bold">return</span> -<span style="color:#00D">1</span>;
+        }
+
+        width = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+        height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">largura = </span><span style="color:#710">&quot;</span></span> &lt;&lt; width &lt;&lt; endl;
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">altura  = </span><span style="color:#710">&quot;</span></span> &lt;&lt; height &lt;&lt; endl;
+
+        <span style="color:#0a8;font-weight:bold">int</span> histw = nbins, histh = nbins / <span style="color:#00D">2</span>;
+        <span style="color:#777">//Hists Preto e Equalizado</span>
+        Mat histImgP(histh, histw, CV_8UC3, Scalar(<span style="color:#00D">0</span>));
+        Mat histImgEq(histh, histw, CV_8UC3, Scalar(<span style="color:#00D">0</span>));
+
+        <span style="color:#080;font-weight:bold">while</span> (<span style="color:#00D">1</span>) {
+                cap &gt;&gt; image;
+
+                <span style="color:#777">//Converte a imagem para cinza e equaliza</span>
+                cvtColor(image, grayimage, CV_BGR2GRAY);
+                equalizeHist(grayimage, eqimage);
+
+                <span style="color:#777">//HISTS preto e Eq</span>
+                split(grayimage, planesP);
+                split(eqimage, planesEq);
+                calcHist(&amp;planesP[<span style="color:#00D">0</span>], <span style="color:#00D">1</span>, <span style="color:#00D">0</span>, Mat(), histP, <span style="color:#00D">1</span>,
+                                &amp;nbins, &amp;histrange,
+                                uniform, acummulate);
+                calcHist(&amp;planesEq[<span style="color:#00D">0</span>], <span style="color:#00D">1</span>, <span style="color:#00D">0</span>, Mat(), histEq, <span style="color:#00D">1</span>,
+                                &amp;nbins, &amp;histrange,
+                                uniform, acummulate);
+
+                <span style="color:#777">//Normalizando</span>
+                normalize(histP, histP, <span style="color:#00D">0</span>, histImgP.rows, NORM_MINMAX, -<span style="color:#00D">1</span>, Mat());
+                histImgP.setTo(Scalar(<span style="color:#00D">0</span>));
+                normalize(histEq, histEq, <span style="color:#00D">0</span>, histImgEq.rows, NORM_MINMAX, -<span style="color:#00D">1</span>, Mat());
+                histImgEq.setTo(Scalar(<span style="color:#00D">0</span>));
+
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;nbins; i++) {
+                        line(histImgP,
+                                Point(i, histh),
+                                Point(i, histh - cvRound(histP.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(i))),
+                                Scalar(<span style="color:#00D">0</span>,<span style="color:#00D">255</span>,<span style="color:#00D">255</span>), <span style="color:#00D">1</span>, <span style="color:#00D">8</span>, <span style="color:#00D">0</span>);
+                        line(histImgEq,
+                                Point(i, histh),
+                                Point(i, histh - cvRound(histEq.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(i))),
+                                Scalar(<span style="color:#00D">0</span>,<span style="color:#00D">0</span>,<span style="color:#00D">255</span>), <span style="color:#00D">1</span>, <span style="color:#00D">8</span>, <span style="color:#00D">0</span>);
+                }
+
+                <span style="color:#777">//Ler as imagens de escala de cinza em RGB</span>
+                <span style="color:#777">//para poder colocar seus histogramas</span>
+                cvtColor(eqimage, eqimage, CV_GRAY2RGB);
+                cvtColor(grayimage, grayimage, CV_GRAY2RGB);
+
+                <span style="color:#777">//Coloca os histogramas no canto das imagens</span>
+                histImgP.copyTo(grayimage(Rect(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, nbins, histh)));
+                histImgEq.copyTo(eqimage(Rect(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, nbins, histh)));
+
+                imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">image</span><span style="color:#710">&quot;</span></span>, image);
+                imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Escala de Cinza</span><span style="color:#710">&quot;</span></span>, grayimage);
+                imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Equalizado</span><span style="color:#710">&quot;</span></span>, eqimage);
+
+                <span style="color:#080;font-weight:bold">if</span> (waitKey(<span style="color:#00D">30</span>) &gt;= <span style="color:#00D">0</span>) <span style="color:#080;font-weight:bold">break</span>;
+        }
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exercício_4_2_detector_de_movimentos">Exercício 4.2 - Detector de Movimentos</h3>
+<div class="paragraph">
+<p>Este exercício será sobre um detector de movimentos feito usando
+comparação de histogramas.
+Para compara os histogramas foi usada a função <strong>cv::compareHist</strong>
+e usado o método da interseção
+que pode ser dado pela seguinte formula:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="intersec.png" alt="interserc">
+</div>
+</div>
+<div class="paragraph">
+<p>A função retorna um float, como resultado da comparação entre
+o histograma anterior e o atual, então determinamos esse valor
+como movimento se passar de um numero que determinamos ser 55.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 8. Codigo 4.2 - Comparando os histogramas</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp">                Dcomp = compareHist(histR, ant_histR, CV_COMP_INTERSECT);
+
+                ant_histR = histR; <span style="color:#777">//O atual vira o anterior pós comparaçao</span>
+
+                <span style="color:#080;font-weight:bold">if</span> (fabs(Dcomp - ant_comp) &gt; <span style="color:#00D">55</span>) {
+                        contadorM++;
+                        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Movimento: </span><span style="color:#710">&quot;</span></span> &lt;&lt; contadorM &lt;&lt; endl;;
+                        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Diferença: </span><span style="color:#710">&quot;</span></span> &lt;&lt; fabs(Dcomp - ant_comp) &lt;&lt; endl;
+                        <span style="color:#777">//Desenha circulo amarelo na imagem</span>
+                        circle(image, Point(<span style="color:#00D">128</span>, <span style="color:#00D">64</span>), <span style="color:#00D">50</span>, Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">255</span>, <span style="color:#00D">255</span>), -<span style="color:#00D">1</span>, <span style="color:#00D">8</span>, <span style="color:#00D">0</span>);
+                }
+                ant_comp = Dcomp;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ao detectarmos movimento um circulo amarelo é desenhado na imagem
+como sinalização como demonstrado abaixo.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="42_movimento.png" alt="Circulo Amarelo">
+</div>
+<div class="title">Figure 4. Movimento detectado</div>
+</div>
+<div class="paragraph">
+<p>Segue abaixo o codigo completo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 9. Codigo 4.1 -Equalização de Histogramas</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;math.h&gt;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argc, <span style="color:#0a8;font-weight:bold">char</span>** argv) {
+        Mat image, eqimage, grayimage;
+        <span style="color:#0a8;font-weight:bold">int</span> width, height, contadorM=<span style="color:#00D">0</span>;
+        VideoCapture cap;
+        vector&lt;Mat&gt; planes;
+        Mat histR, histG, histB, histEq, ant_histR;
+        <span style="color:#0a8;font-weight:bold">int</span> nbins = <span style="color:#00D">64</span>;
+        <span style="color:#0a8;font-weight:bold">float</span> range[] = { <span style="color:#00D">0</span>, <span style="color:#00D">256</span> };
+        <span style="color:#088;font-weight:bold">const</span> <span style="color:#0a8;font-weight:bold">float</span> *histrange = { range };
+        <span style="color:#0a8;font-weight:bold">bool</span> uniform = <span style="color:#069">true</span>;
+        <span style="color:#0a8;font-weight:bold">bool</span> acummulate = <span style="color:#069">false</span>;
+        <span style="color:#0a8;font-weight:bold">double</span> Dcomp, ant_comp=<span style="color:#00D">0</span>;
+
+        cap.open(<span style="color:#00D">0</span>);
+
+        <span style="color:#080;font-weight:bold">if</span> (!cap.isOpened()) {
+                cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">cameras indisponiveis</span><span style="color:#710">&quot;</span></span>;
+                <span style="color:#080;font-weight:bold">return</span> -<span style="color:#00D">1</span>;
+        }
+
+        width = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+        height = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">largura = </span><span style="color:#710">&quot;</span></span> &lt;&lt; width &lt;&lt; endl;
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">altura  = </span><span style="color:#710">&quot;</span></span> &lt;&lt; height &lt;&lt; endl;
+
+        <span style="color:#0a8;font-weight:bold">int</span> histw = nbins, histh = nbins / <span style="color:#00D">2</span>;
+        Mat histImgR(histh, histw, CV_8UC3, Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, <span style="color:#00D">0</span>));
+        Mat histImgG(histh, histw, CV_8UC3, Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, <span style="color:#00D">0</span>));
+        Mat histImgB(histh, histw, CV_8UC3, Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, <span style="color:#00D">0</span>));
+
+        <span style="color:#080;font-weight:bold">while</span> (<span style="color:#00D">1</span>) {
+                cap &gt;&gt; image;
+                split(image, planes);
+                calcHist(&amp;planes[<span style="color:#00D">0</span>], <span style="color:#00D">1</span>, <span style="color:#00D">0</span>, Mat(), histR, <span style="color:#00D">1</span>,
+                        &amp;nbins, &amp;histrange,
+                        uniform, acummulate);
+                calcHist(&amp;planes[<span style="color:#00D">1</span>], <span style="color:#00D">1</span>, <span style="color:#00D">0</span>, Mat(), histG, <span style="color:#00D">1</span>,
+                        &amp;nbins, &amp;histrange,
+                        uniform, acummulate);
+                calcHist(&amp;planes[<span style="color:#00D">2</span>], <span style="color:#00D">1</span>, <span style="color:#00D">0</span>, Mat(), histB, <span style="color:#00D">1</span>,
+                        &amp;nbins, &amp;histrange,
+                        uniform, acummulate);
+
+                normalize(histR, histR, <span style="color:#00D">0</span>, histImgR.rows, NORM_MINMAX, -<span style="color:#00D">1</span>, Mat());
+                normalize(histG, histG, <span style="color:#00D">0</span>, histImgG.rows, NORM_MINMAX, -<span style="color:#00D">1</span>, Mat());
+                normalize(histB, histB, <span style="color:#00D">0</span>, histImgB.rows, NORM_MINMAX, -<span style="color:#00D">1</span>, Mat());
+
+                histImgR.setTo(Scalar(<span style="color:#00D">0</span>));
+                histImgG.setTo(Scalar(<span style="color:#00D">0</span>));
+                histImgB.setTo(Scalar(<span style="color:#00D">0</span>));
+
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;nbins; i++) {
+                        line(histImgR,
+                                Point(i, histh),
+                                Point(i, histh - cvRound(histR.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(i))),
+                                Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, <span style="color:#00D">255</span>), <span style="color:#00D">1</span>, <span style="color:#00D">8</span>, <span style="color:#00D">0</span>);
+                        line(histImgG,
+                                Point(i, histh),
+                                Point(i, histh - cvRound(histG.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(i))),
+                                Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">255</span>, <span style="color:#00D">0</span>), <span style="color:#00D">1</span>, <span style="color:#00D">8</span>, <span style="color:#00D">0</span>);
+                        line(histImgB,
+                                Point(i, histh),
+                                Point(i, histh - cvRound(histB.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(i))),
+                                Scalar(<span style="color:#00D">255</span>, <span style="color:#00D">0</span>, <span style="color:#00D">0</span>), <span style="color:#00D">1</span>, <span style="color:#00D">8</span>, <span style="color:#00D">0</span>);
+                }
+
+                <span style="color:#080;font-weight:bold">if</span>(ant_histR.empty()) ant_histR = histR;
+
+                <span style="color:#777">//Dcomp = compareHist(histR, ant_histR, CV_COMP_CORREL);</span>
+                Dcomp = compareHist(histR, ant_histR, CV_COMP_INTERSECT);
+
+                ant_histR = histR; <span style="color:#777">//O atual vira o anterior pós comparaçao</span>
+
+                <span style="color:#080;font-weight:bold">if</span> (fabs(Dcomp - ant_comp) &gt; <span style="color:#00D">55</span>) {
+                        contadorM++;
+                        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Movimento: </span><span style="color:#710">&quot;</span></span> &lt;&lt; contadorM &lt;&lt; endl;;
+                        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Diferença: </span><span style="color:#710">&quot;</span></span> &lt;&lt; fabs(Dcomp - ant_comp) &lt;&lt; endl;
+                        <span style="color:#777">//Desenha circulo amarelo na imagem</span>
+                        circle(image, Point(<span style="color:#00D">128</span>, <span style="color:#00D">64</span>), <span style="color:#00D">50</span>, Scalar(<span style="color:#00D">0</span>, <span style="color:#00D">255</span>, <span style="color:#00D">255</span>), -<span style="color:#00D">1</span>, <span style="color:#00D">8</span>, <span style="color:#00D">0</span>);
+                }
+                ant_comp = Dcomp; <span style="color:#777">//Comparaçao atual vira a anterior</span>
+
+
+                histImgR.copyTo(image(Rect(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, nbins, histh)));
+                histImgG.copyTo(image(Rect(<span style="color:#00D">0</span>, histh, nbins, histh)));
+                histImgB.copyTo(image(Rect(<span style="color:#00D">0</span>, <span style="color:#00D">2</span> * histh, nbins, histh)));
+                imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">image</span><span style="color:#710">&quot;</span></span>, image);
+
+                <span style="color:#080;font-weight:bold">if</span> (waitKey(<span style="color:#00D">30</span>) &gt;= <span style="color:#00D">0</span>) <span style="color:#080;font-weight:bold">break</span>;
+        }
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_capítulo_5">Capítulo 5</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_5_1">Exercício 5.1</h3>
+<div class="paragraph">
+<p>Nessa tarefa aplicaremos um filtro laplaciano gaussiano em uma imagem e compararemos
+o resultado com um filtro laplaciano normal tendo como base o código filtroespacial.cpp.</p>
+</div>
+<div class="paragraph">
+<p>Foi adicionado o seguinte comando ao switch do programa:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 10. Codigo 5 - Gaussiano</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp">        <span style="color:#080;font-weight:bold">switch</span> (key) {
+                <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'p'</span>:
+                        menu();
+                        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, gauss);
+                        scaleAdd(mask, <span style="color:#00D">1</span> / <span style="color:#00D">1</span><span style="color:#60E">6</span><span style="color:#60E">.0</span>, Mat::zeros(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F), mask1);
+                        mask = mask1;
+                        lg = <span style="color:#00D">1</span>;
+                        printmask(mask);
+                        <span style="color:#080;font-weight:bold">break</span>;
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Ao selecionado esse comando aplica um filtro cria uma mascara de filtro gaussiano
+para ser usada na imagem, e logo em seguida o filtro gaussiano e laplacianos sao aplicados
+da seguinte forma:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 11. Codigo 5 - Laplaciano</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp">filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(<span style="color:#00D">1</span>, <span style="color:#00D">1</span>), <span style="color:#00D">0</span>);
+
+        <span style="color:#080;font-weight:bold">if</span> (lg == <span style="color:#00D">1</span>) { <span style="color:#777">//laplaciano gaussiano verdadeiro</span>
+                mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, laplacian);
+                filter2D(frameFiltered, frameFiltered, frame32f.depth(), mask, Point(<span style="color:#00D">1</span>, <span style="color:#00D">1</span>), <span style="color:#00D">0</span>);
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Com o código acima o filtro gaussiano é aplicado e logo em seguida o laplaciano tambem é,
+com ajuda de uma variável chama <strong>lg</strong> para indicar que o programa deverá aplicar
+um segundo filtro na imagem, o laplaciano. Segue abaixo os resultados.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="5_lapgaussiano.png" alt="LapGauss">
+</div>
+<div class="title">Figure 5. Laplaciano a direita e LapGauss a esquerda</div>
+</div>
+<div class="paragraph">
+<p>Nota-se que na imagem com o filtro laplaciano gaussiano aplicado as bordas
+estão mais destacadas que o laplaciano simples.</p>
+</div>
+<div class="paragraph">
+<p>Segue abaixo o código completo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 12. Codigo 5 - Laplaciano Gaussiano</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+
+<span style="color:#088;font-weight:bold">void</span> printmask(Mat &amp;m) {
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;m.size().height; i++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> j = <span style="color:#00D">0</span>; j&lt;m.size().width; j++) {
+                        cout &lt;&lt; m.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(i, j) &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">,</span><span style="color:#710">&quot;</span></span>;
+                }
+                cout &lt;&lt; endl;
+        }
+}
+
+<span style="color:#088;font-weight:bold">void</span> menu() {
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#D20">pressione a tecla para ativar o filtro: </span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>
+                <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">a - calcular modulo</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>
+                <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">m - media</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>
+                <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">g - gauss</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>
+                <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">v - vertical</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>
+                <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">h - horizontal</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>
+                <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">l - laplaciano</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>
+                <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">p - Laplaciano do Gaussiano</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>
+                <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">esc - sair</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>;
+}
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argvc, <span style="color:#0a8;font-weight:bold">char</span>** argv) {
+        VideoCapture video;
+        <span style="color:#0a8;font-weight:bold">float</span> media[] = { <span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,
+                <span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,
+                <span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span> };
+        <span style="color:#0a8;font-weight:bold">float</span> media5[] = { <span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,
+                <span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,
+                <span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,
+                <span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,
+                <span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span>,<span style="color:#00D">1</span> };
+
+        <span style="color:#0a8;font-weight:bold">float</span> gauss[] = { <span style="color:#00D">1</span>,<span style="color:#00D">2</span>,<span style="color:#00D">1</span>,
+                <span style="color:#00D">2</span>,<span style="color:#00D">4</span>,<span style="color:#00D">2</span>,
+                <span style="color:#00D">1</span>,<span style="color:#00D">2</span>,<span style="color:#00D">1</span> };
+        <span style="color:#0a8;font-weight:bold">float</span> horizontal[] = { -<span style="color:#00D">1</span>,<span style="color:#00D">0</span>,<span style="color:#00D">1</span>,
+                -<span style="color:#00D">2</span>,<span style="color:#00D">0</span>,<span style="color:#00D">2</span>,
+                -<span style="color:#00D">1</span>,<span style="color:#00D">0</span>,<span style="color:#00D">1</span> };
+        <span style="color:#0a8;font-weight:bold">float</span> vertical[] = { -<span style="color:#00D">1</span>,-<span style="color:#00D">2</span>,-<span style="color:#00D">1</span>,
+                <span style="color:#00D">0</span>,<span style="color:#00D">0</span>,<span style="color:#00D">0</span>,
+                <span style="color:#00D">1</span>,<span style="color:#00D">2</span>,<span style="color:#00D">1</span> };
+        <span style="color:#0a8;font-weight:bold">float</span> laplacian[] = { <span style="color:#00D">0</span>,-<span style="color:#00D">1</span>,<span style="color:#00D">0</span>,
+                -<span style="color:#00D">1</span>,<span style="color:#00D">4</span>,-<span style="color:#00D">1</span>,
+                <span style="color:#00D">0</span>,-<span style="color:#00D">1</span>,<span style="color:#00D">0</span> };
+
+        Mat cap, frame, frame32f, frameFiltered;
+        Mat mask(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F), mask1;
+        Mat result, result1;
+        <span style="color:#0a8;font-weight:bold">double</span> width, height, min, max;
+        <span style="color:#0a8;font-weight:bold">int</span> absolut,lg=<span style="color:#00D">0</span>;
+        <span style="color:#0a8;font-weight:bold">char</span> key;
+
+        video.open(<span style="color:#00D">0</span>);
+        <span style="color:#080;font-weight:bold">if</span> (!video.isOpened())
+                <span style="color:#080;font-weight:bold">return</span> -<span style="color:#00D">1</span>;
+        width = video.get(CV_CAP_PROP_FRAME_WIDTH);
+        height = video.get(CV_CAP_PROP_FRAME_HEIGHT);
+        std::cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">largura=</span><span style="color:#710">&quot;</span></span> &lt;&lt; width &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>;;
+        std::cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">altura =</span><span style="color:#710">&quot;</span></span> &lt;&lt; height &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>;;
+
+        namedWindow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">filtroespacial</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>);
+
+        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, media);
+        scaleAdd(mask, <span style="color:#00D">1</span> / <span style="color:#60E">9</span><span style="color:#60E">.0</span>, Mat::zeros(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F), mask1);
+        swap(mask, mask1);
+        absolut = <span style="color:#00D">1</span>; <span style="color:#777">// calcs abs of the image</span>
+
+        menu();
+        <span style="color:#080;font-weight:bold">for</span> (;;) {
+
+                video &gt;&gt; cap;
+                cvtColor(cap, frame, CV_BGR2GRAY);
+                flip(frame, frame, <span style="color:#00D">1</span>);
+                imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">original</span><span style="color:#710">&quot;</span></span>, frame);
+                frame.convertTo(frame32f, CV_32F);
+                filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(<span style="color:#00D">1</span>, <span style="color:#00D">1</span>), <span style="color:#00D">0</span>);
+
+                <span style="color:#080;font-weight:bold">if</span> (lg == <span style="color:#00D">1</span>) { <span style="color:#777">//laplaciano gaussiano verdadeiro</span>
+                        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, laplacian);
+                        filter2D(frameFiltered, frameFiltered, frame32f.depth(), mask, Point(<span style="color:#00D">1</span>, <span style="color:#00D">1</span>), <span style="color:#00D">0</span>);
+                }
+                <span style="color:#080;font-weight:bold">if</span> (absolut) {
+                        frameFiltered = abs(frameFiltered);
+                }
+
+                frameFiltered.convertTo(result, CV_8U);
+                imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">filtroespacial</span><span style="color:#710">&quot;</span></span>, result);
+                key = (<span style="color:#0a8;font-weight:bold">char</span>)waitKey(<span style="color:#00D">10</span>);
+                <span style="color:#080;font-weight:bold">if</span> (key == <span style="color:#00D">27</span>) <span style="color:#080;font-weight:bold">break</span>; <span style="color:#777">// esc pressed!</span>
+                <span style="color:#080;font-weight:bold">switch</span> (key) {
+                <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'a'</span>:
+                        menu();
+                        absolut = !absolut;
+                        <span style="color:#080;font-weight:bold">break</span>;
+                <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'m'</span>:
+                        menu();
+                        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, media);
+                        scaleAdd(mask, <span style="color:#00D">1</span> / <span style="color:#60E">9</span><span style="color:#60E">.0</span>, Mat::zeros(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F), mask1);
+                        mask = mask1;
+                        printmask(mask);
+                        <span style="color:#080;font-weight:bold">break</span>;
+                <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'g'</span>:
+                        menu();
+                        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, gauss);
+                        scaleAdd(mask, <span style="color:#00D">1</span> / <span style="color:#00D">1</span><span style="color:#60E">6</span><span style="color:#60E">.0</span>, Mat::zeros(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F), mask1);
+                        mask = mask1;
+                        lg = <span style="color:#00D">0</span>;
+                        printmask(mask);
+                        <span style="color:#080;font-weight:bold">break</span>;
+                <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'h'</span>:
+                        menu();
+                        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, horizontal);
+                        printmask(mask);
+                        <span style="color:#080;font-weight:bold">break</span>;
+                <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'v'</span>:
+                        menu();
+                        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, vertical);
+                        printmask(mask);
+                        <span style="color:#080;font-weight:bold">break</span>;
+                <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'l'</span>:
+                        menu();
+                        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, laplacian);
+                        printmask(mask);
+                        lg = <span style="color:#00D">0</span>;
+                        <span style="color:#080;font-weight:bold">break</span>;
+                <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'p'</span>:
+                        menu();
+                        mask = Mat(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F, gauss);
+                        scaleAdd(mask, <span style="color:#00D">1</span> / <span style="color:#00D">1</span><span style="color:#60E">6</span><span style="color:#60E">.0</span>, Mat::zeros(<span style="color:#00D">3</span>, <span style="color:#00D">3</span>, CV_32F), mask1);
+                        mask = mask1;
+                        lg = <span style="color:#00D">1</span>;
+                        printmask(mask);
+                        <span style="color:#080;font-weight:bold">break</span>;
+                <span style="color:#080;font-weight:bold">default</span>:
+                        <span style="color:#080;font-weight:bold">break</span>;
+                }
+        }
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_capítulo_6">Capítulo 6</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_6_1">Exercício 6.1</h3>
+<div class="paragraph">
+<p>Nesta tarefa será mostrado como foi realizado o programa de tilf-shift
+numa imagem.</p>
+</div>
+<div class="paragraph">
+<p>Para borrar a imagem foi usada a função <strong>cv::blur</strong> pelo seus
+baixo custo em desempenho, ela foi usada na função chamada pelo trackbar
+da seguinte forma:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlight"><code class="language-ruby" data-lang="ruby">require 'asciidoctor'  <b class="conum">(1)</b>
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//DESFOCA imagem</span>
+<span style="color:#088;font-weight:bold">void</span> on_trackbar_desfoque(<span style="color:#0a8;font-weight:bold">int</span>, <span style="color:#088;font-weight:bold">void</span>*) {
 
-Asciidoctor.convert_file 'mysample.adoc'  <b class="conum">(2)</b></code></pre>
+        image1.convertTo(frame32f, CV_32F);
+
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">1</span>; i &lt; desfoque; i = i + <span style="color:#00D">2</span>){
+                blur(image1, imageBlur, Size(i, i), Point(-<span style="color:#00D">1</span>, -<span style="color:#00D">1</span>));
+        }
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">borrada</span><span style="color:#710">&quot;</span></span>, imageBlur);
+        on_trackbar_altura(altura_focada, <span style="color:#00D">0</span>);
+}</code></pre>
 </div>
 </div>
-<div class="colist arabic">
-<ol>
-<li>
-<p>Imports the library</p>
-</li>
-<li>
-<p>Reads, parses, and converts the file</p>
-</li>
-</ol>
+<div class="paragraph">
+<p>Essa funçao chama outra função que tambem é
+chamada pelos trackbars de posição e altura da região focada
+da imagem.</p>
+</div>
+<div class="paragraph">
+<p>Essa função define a regiao da imagem que estará em foque.
+Após a execução desses 2 métodos é hora de juntar a regiao focada e borrada
+em apenas uma imagem, usando <strong>cv::addWeighted</strong>, mas para isso
+precisamos definir o alfa pela seguinte equação:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="alfa_tilt.png" alt="alfa tilt">
+</div>
+</div>
+<div class="paragraph">
+<p>No código o alfa é calculado da seguinte forma:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#088;font-weight:bold">void</span> on_trackbar_blend(<span style="color:#0a8;font-weight:bold">int</span>, <span style="color:#088;font-weight:bold">void</span>*) {
+
+        blended = image1.clone();
+        n1 = inicio;
+        n2 = inicio + limit;
+        d = (desfoque / <span style="color:#00D">20</span>)*<span style="color:#00D">100</span>; <span style="color:#777">//fazendo a variavel desfoque entre 0 a 100</span>
+
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;blended.rows; i++) {
+                alfa= <span style="color:#60E">0</span><span style="color:#60E">.5</span>*(tanh((i-n1)/(d+ <span style="color:#00D">1</span>)) - tanh((i-n2)/(d+ <span style="color:#00D">1</span>)));
+                beta = <span style="color:#00D">1</span> - alfa;
+                addWeighted(imageTop.row(i), alfa, imageBlur.row(i), beta, <span style="color:#60E">0</span><span style="color:#60E">.0</span>, blended.row(i));
+        }
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">addweighted</span><span style="color:#710">&quot;</span></span>, blended);
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Abaixo uma imagem usada para testar o programa:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="tilt-shift.png" alt="tilt shift">
+</div>
+<div class="title">Figure 6. Tilt-Shift</div>
+</div>
+<div class="paragraph">
+<p>Segue abaixo o código completo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 13. Código 6 - Tilt-Shift</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+
+<span style="color:#0a8;font-weight:bold">double</span> alfa,beta;
+
+<span style="color:#0a8;font-weight:bold">int</span> desfoque_slider_max = <span style="color:#00D">20</span>;
+
+<span style="color:#0a8;font-weight:bold">int</span> top_slider = <span style="color:#00D">0</span>;
+<span style="color:#0a8;font-weight:bold">int</span> top_slider_max = <span style="color:#00D">100</span>;
+
+Mat image1, image2, blended;
+Mat imageTop, imageBlur;
+
+<span style="color:#0a8;font-weight:bold">char</span> TrackbarName[<span style="color:#00D">50</span>];
+
+<span style="color:#777">//minhas variaveis</span>
+<span style="color:#0a8;font-weight:bold">int</span> altura_focada=<span style="color:#00D">20</span>, Y_max, X_max, inicio=<span style="color:#00D">0</span>, desfoque=<span style="color:#00D">10</span>;
+Mat frame32f, frameFiltered;
+<span style="color:#0a8;font-weight:bold">int</span> n1, n2, limit, d;
+
+<span style="color:#088;font-weight:bold">void</span> on_trackbar_blend(<span style="color:#0a8;font-weight:bold">int</span>, <span style="color:#088;font-weight:bold">void</span>*) {
+
+        blended = image1.clone();
+        n1 = inicio;
+        n2 = inicio + limit;
+        d = (desfoque / <span style="color:#00D">20</span>)*<span style="color:#00D">100</span>; <span style="color:#777">//fazendo a variavel desfoque entre 0 a 100</span>
+
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;blended.rows; i++) {
+                alfa= <span style="color:#60E">0</span><span style="color:#60E">.5</span>*(tanh((i-n1)/(d+ <span style="color:#00D">1</span>)) - tanh((i-n2)/(d+ <span style="color:#00D">1</span>)));
+                beta = <span style="color:#00D">1</span> - alfa;
+                addWeighted(imageTop.row(i), alfa, imageBlur.row(i), beta, <span style="color:#60E">0</span><span style="color:#60E">.0</span>, blended.row(i));
+        }
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">addweighted</span><span style="color:#710">&quot;</span></span>, blended);
+}
+
+<span style="color:#777">//funçao trackbar altura ******</span>
+<span style="color:#088;font-weight:bold">void</span> on_trackbar_altura(<span style="color:#0a8;font-weight:bold">int</span>, <span style="color:#088;font-weight:bold">void</span>*) {
+        imageBlur.copyTo(imageTop);
+        limit = altura_focada *Y_max / <span style="color:#00D">100</span>;
+
+        <span style="color:#080;font-weight:bold">if</span> (inicio &gt;= Y_max - limit) {
+                inicio = Y_max - limit - <span style="color:#00D">1</span>;
+                cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#D20">Quebrou o Limite</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>;
+        }
+        <span style="color:#080;font-weight:bold">if</span> (limit &gt; <span style="color:#00D">0</span>) {
+                Mat tmp = image2(Rect(<span style="color:#00D">0</span>, inicio, X_max, limit));
+                tmp.copyTo(imageTop(Rect(<span style="color:#00D">0</span>, inicio, X_max, limit)));
+                imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">altura</span><span style="color:#710">&quot;</span></span>, tmp);
+        }
+        on_trackbar_blend(desfoque, <span style="color:#00D">0</span>);
+}
+
+<span style="color:#777">//DESFOCA imagem</span>
+<span style="color:#088;font-weight:bold">void</span> on_trackbar_desfoque(<span style="color:#0a8;font-weight:bold">int</span>, <span style="color:#088;font-weight:bold">void</span>*) {
+
+        image1.convertTo(frame32f, CV_32F);
+
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">1</span>; i &lt; desfoque; i = i + <span style="color:#00D">2</span>){
+                blur(image1, imageBlur, Size(i, i), Point(-<span style="color:#00D">1</span>, -<span style="color:#00D">1</span>));
+        }
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">borrada</span><span style="color:#710">&quot;</span></span>, imageBlur);
+        on_trackbar_altura(altura_focada, <span style="color:#00D">0</span>);
+}
+
+<span style="color:#777">// image(Rect(0, y_inicial, largura, y_final))</span>
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argvc, <span style="color:#0a8;font-weight:bold">char</span>** argv) {
+        image1 = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CasaSol.png</span><span style="color:#710">&quot;</span></span>);
+        image2 = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CasaSol.png</span><span style="color:#710">&quot;</span></span>);
+        image2.copyTo(imageTop);
+        image1.copyTo(imageBlur);
+        namedWindow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">addweighted</span><span style="color:#710">&quot;</span></span>, <span style="color:#00D">1</span>);
+
+        <span style="color:#777">//dimensoes da figura</span>
+        X_max = image1.size().width;
+        Y_max = image2.size().height;
+        std::cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">largura=</span><span style="color:#710">&quot;</span></span> &lt;&lt; Y_max &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>;;
+        std::cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">altura =</span><span style="color:#710">&quot;</span></span> &lt;&lt; X_max &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#710">&quot;</span></span>;;
+
+        on_trackbar_desfoque(desfoque, <span style="color:#00D">0</span>);
+        on_trackbar_blend(desfoque, <span style="color:#00D">0</span>);
+
+        <span style="color:#777">//Altura da regiao focada *********</span>
+        sprintf_s(TrackbarName, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Altura x %d</span><span style="color:#710">&quot;</span></span>, Y_max);
+        createTrackbar(TrackbarName, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">addweighted</span><span style="color:#710">&quot;</span></span>,
+                &amp;altura_focada,
+                <span style="color:#00D">100</span>,
+                on_trackbar_altura);
+        on_trackbar_altura(altura_focada, <span style="color:#00D">0</span>);
+
+        <span style="color:#777">//Deslocamento da regiao focada</span>
+        sprintf_s(TrackbarName, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Deslocamento x %d</span><span style="color:#710">&quot;</span></span>, Y_max);
+        createTrackbar(TrackbarName, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">addweighted</span><span style="color:#710">&quot;</span></span>,
+                &amp;inicio,
+                Y_max,
+                on_trackbar_altura);
+
+        <span style="color:#777">//Deslocamento da regiao focada</span>
+        sprintf_s(TrackbarName, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Desfoque x %d</span><span style="color:#710">&quot;</span></span>, desfoque_slider_max);
+        createTrackbar(TrackbarName, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">addweighted</span><span style="color:#710">&quot;</span></span>,
+                &amp;desfoque,
+                desfoque_slider_max,
+                on_trackbar_desfoque);
+
+        waitKey(<span style="color:#00D">0</span>);
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-03-20 18:49:03 Hora PadrÒo de Buenos Aires
+Last updated 2018-04-06 00:52:03 Hora PadrÒo de Buenos Aires
 </div>
 </div>
 </body>
