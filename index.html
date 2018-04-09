@@ -433,10 +433,160 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>Doc Writer &lt;<a href="mailto:doc@example.com">doc@example.com</a>&gt;</p>
+<p><strong>Feito por:</strong><br>
+Dmytres Kelven dos Santos Nunes &lt;<a href="mailto:dmytresksn@hotmail.com">dmytresksn@hotmail.com</a>&gt;<br>
+e<br>
+Thúlio Mattheus Pereira de Sousa &lt;<a href="mailto:thuliomattheus@hotmail.com">thuliomattheus@hotmail.com</a>&gt;</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_capítulo_2">Capítulo 2</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_2_1">Exercício 2.1</h3>
+<div class="paragraph">
+<p>Nesse exercício será mostrado um programa que inverte a cor de uma imagem em tons de cinza</p>
 </div>
 <div class="paragraph">
-<p>A simple <a href="http://asciidoc.org">AsciiDoc</a> document.</p>
+<p>Para inverter o valor de cada pixel, é necessário pegar seu valor máximo,
+nesse caso 255, e subtrair pelo valor atual do pixel, como mostrado abaixo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 1. Codigo 2.1 -Cores negativas</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp">        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = xp[<span style="color:#00D">0</span>]; i &lt; yp[<span style="color:#00D">0</span>]; i++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> j = xp[<span style="color:#00D">1</span>]; j &lt; yp[<span style="color:#00D">1</span>]; j++) {
+                        image.at&lt;uchar&gt;(i, j) = <span style="color:#00D">255</span> - image.at&lt;uchar&gt;(i, j);
+                }
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Abaixo alguns exemplos de imagens usadas.
+.Negativo
+image::21_negativos.png[NegativoIMG]</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="21_negativos.png" alt="Quad_change">
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exercício_2_2">Exercício 2.2</h3>
+<div class="paragraph">
+<p>O objetivo dessa tarefa é de inverter os quadrantes de uma imagem de tamanho qualquer</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 2. Código 2.2 - Quadrantes</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp">        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> l = <span style="color:#00D">0</span>; l &lt; invertido.rows; l++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> c = <span style="color:#00D">0</span>; c &lt; invertido.cols / <span style="color:#00D">2</span>; c++) {
+
+                        aux = invertido.at&lt;uchar&gt;(l, c);
+
+                        <span style="color:#777">//Primeiro quadrante</span>
+                        <span style="color:#080;font-weight:bold">if</span> (l&lt;invertido.rows / <span style="color:#00D">2</span>) {
+                                invertido.at&lt;uchar&gt;(l, c) = invertido.at&lt;uchar&gt;(l + invertido.rows / <span style="color:#00D">2</span>, c + invertido.cols / <span style="color:#00D">2</span>);
+                                invertido.at&lt;uchar&gt;(l + invertido.rows / <span style="color:#00D">2</span>, c + invertido.cols / <span style="color:#00D">2</span>) = aux;
+                        }
+                        <span style="color:#777">//Terceiro quadrante</span>
+                        <span style="color:#080;font-weight:bold">else</span> {
+                                invertido.at&lt;uchar&gt;(l, c) = invertido.at&lt;uchar&gt;(l - invertido.rows / <span style="color:#00D">2</span>, c + invertido.cols / <span style="color:#00D">2</span>);
+                                invertido.at&lt;uchar&gt;(l - invertido.rows / <span style="color:#00D">2</span>, c + invertido.cols / <span style="color:#00D">2</span>) = aux;
+                        }
+                }
+        }</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Abaixo alguns exemplos</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="22_quadrantes.png" alt="Quad_change">
+</div>
+<div class="title">Figure 1. Quadrantes</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="22_quad2.png" alt="Quad_change">
+</div>
+</div>
+<div class="paragraph">
+<p>Segue o código completo do capítulo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 3. Código do Cap 2</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+
+<span style="color:#777">//#include &quot;neg_quadrantes.cpp&quot;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span>, <span style="color:#0a8;font-weight:bold">char</span>**) {
+        Mat image;
+        Vec3b val;
+
+        <span style="color:#777">//image = imread(&quot;bebe.png&quot;, CV_LOAD_IMAGE_GRAYSCALE);</span>
+        image = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CasaSol.png</span><span style="color:#710">&quot;</span></span>, CV_LOAD_IMAGE_GRAYSCALE);
+        <span style="color:#080;font-weight:bold">if</span> (!image.data)
+                cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">nao abriu bebe.png</span><span style="color:#710">&quot;</span></span> &lt;&lt; endl;
+
+        namedWindow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">janela</span><span style="color:#710">&quot;</span></span>, WINDOW_AUTOSIZE);
+        <span style="color:#777">//=============xxxxxxxxxx QUADRANTES ========--=-===</span>
+        <span style="color:#777">//Mat invertido = imread(&quot;bebe.png&quot;, CV_LOAD_IMAGE_GRAYSCALE);</span>
+        Mat invertido = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">CasaSol.png</span><span style="color:#710">&quot;</span></span>, CV_LOAD_IMAGE_GRAYSCALE);
+        uchar aux;
+
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> l = <span style="color:#00D">0</span>; l &lt; invertido.rows; l++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> c = <span style="color:#00D">0</span>; c &lt; invertido.cols / <span style="color:#00D">2</span>; c++) {
+
+                        aux = invertido.at&lt;uchar&gt;(l, c);
+
+                        <span style="color:#777">//Primeiro quadrante</span>
+                        <span style="color:#080;font-weight:bold">if</span> (l&lt;invertido.rows / <span style="color:#00D">2</span>) {
+                                invertido.at&lt;uchar&gt;(l, c) = invertido.at&lt;uchar&gt;(l + invertido.rows / <span style="color:#00D">2</span>, c + invertido.cols / <span style="color:#00D">2</span>);
+                                invertido.at&lt;uchar&gt;(l + invertido.rows / <span style="color:#00D">2</span>, c + invertido.cols / <span style="color:#00D">2</span>) = aux;
+                        }
+                        <span style="color:#777">//Terceiro quadrante</span>
+                        <span style="color:#080;font-weight:bold">else</span> {
+                                invertido.at&lt;uchar&gt;(l, c) = invertido.at&lt;uchar&gt;(l - invertido.rows / <span style="color:#00D">2</span>, c + invertido.cols / <span style="color:#00D">2</span>);
+                                invertido.at&lt;uchar&gt;(l - invertido.rows / <span style="color:#00D">2</span>, c + invertido.cols / <span style="color:#00D">2</span>) = aux;
+                        }
+                }
+        }
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Imagem Invertida</span><span style="color:#710">&quot;</span></span>&lt;&lt;endl;
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">janela</span><span style="color:#710">&quot;</span></span>, invertido);
+        waitKey();
+
+        <span style="color:#777">// NEGATIVOS ==========================================</span>
+        Vec2i xp, yp;
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Insira os pontos do retangulo negativo, dimensoes:</span><span style="color:#710">&quot;</span></span> &lt;&lt; image.rows &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20"> X </span><span style="color:#710">&quot;</span></span> &lt;&lt; image.cols &lt;&lt; endl;
+
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Ponto de inicio: </span><span style="color:#710">&quot;</span></span>;
+        cin &gt;&gt; xp[<span style="color:#00D">0</span>] &gt;&gt; xp[<span style="color:#00D">1</span>];
+        cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#b0b">\n</span><span style="color:#D20">Ponto final: </span><span style="color:#710">&quot;</span></span>;
+        cin &gt;&gt; yp[<span style="color:#00D">0</span>] &gt;&gt; yp[<span style="color:#00D">1</span>];
+
+
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = xp[<span style="color:#00D">0</span>]; i &lt; yp[<span style="color:#00D">0</span>]; i++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> j = xp[<span style="color:#00D">1</span>]; j &lt; yp[<span style="color:#00D">1</span>]; j++) {
+                        image.at&lt;uchar&gt;(i, j) = <span style="color:#00D">255</span> - image.at&lt;uchar&gt;(i, j);
+                }
+        }
+
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">janela</span><span style="color:#710">&quot;</span></span>, image);
+        waitKey();
+
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -455,7 +605,7 @@ foi usada uma imagem com 630 bolhas como objetos, e cada uma foi pintada com uma
 variação de Azul, Vermelho, ou Verde diferentes da seguinte forma.</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 1. Codigo 3.1 -Rotulaçao RGB</div>
+<div class="title">Listagem 4. Codigo 3.1 -Rotulaçao RGB</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#080;font-weight:bold">if</span> (nobjects &lt;= <span style="color:#00D">255</span>) { <span style="color:#777">//azul</span>
         floodFill(image2, p, Scalar(tomB, <span style="color:#00D">0</span>, <span style="color:#00D">0</span>));
@@ -478,13 +628,13 @@ as pinta.</p>
 <div class="content">
 <img src="31_labelingRGB.png" alt="RotRGB" width="450">
 </div>
-<div class="title">Figure 1. Rotulaçao RGB</div>
+<div class="title">Figure 2. Rotulaçao RGB</div>
 </div>
 <div class="paragraph">
 <p>Segue o codigo completo 3-1:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 2. Codigo 3.1 -Rotulaçao RGB</div>
+<div class="title">Listagem 5. Codigo 3.1 -Rotulaçao RGB</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
 <span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
@@ -571,7 +721,7 @@ suportando objetos com mais de um buraco.</p>
 cor do fundo da seguinte forma.</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 3. Codigo 3.2 -Bordas</div>
+<div class="title">Listagem 6. Codigo 3.2 -Bordas</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//elimina bolhas nas bordas</span>
         <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;height; i++) {
@@ -597,7 +747,7 @@ agora que o fundo foi pintado o programa irá procurar e contar os buracos da
 seguinte forma:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 4. Codigo 3.2 -Contando Furos</div>
+<div class="title">Listagem 7. Codigo 3.2 -Contando Furos</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//busca furos de valor Zero</span>
         <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> i = <span style="color:#00D">0</span>; i&lt;height; i++) {
@@ -620,13 +770,13 @@ seguinte forma:</p>
 <div class="content">
 <img src="32_saida.png" alt="Holes">
 </div>
-<div class="title">Figure 2. Contando buracos</div>
+<div class="title">Figure 3. Contando buracos</div>
 </div>
 <div class="paragraph">
 <p>Segue o codigo completo:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 5. Codigo 3.2 -Contando Furos</div>
+<div class="title">Listagem 8. Codigo 3.2 -Contando Furos</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
 <span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
@@ -727,7 +877,7 @@ e então será destacado a diferença entre a imagem original e nova.</p>
 a equalizamos através da função <strong>cv::equalizeHist</strong> da seguinte forma:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 6. Codigo 4.1 -Equalização</div>
+<div class="title">Listagem 9. Codigo 4.1 -Equalização</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//Converte a imagem para cinza e equaliza</span>
         cvtColor(image, grayimage, CV_BGR2GRAY);
@@ -742,7 +892,7 @@ código base histograms.cpp e geramos o seguinte resultado:</p>
 <div class="content">
 <img src="41_equalizaçao_hists.png" alt="Eq_hists">
 </div>
-<div class="title">Figure 3. Imagem original á esquerda e equalizada á direita</div>
+<div class="title">Figure 4. Imagem original á esquerda e equalizada á direita</div>
 </div>
 <div class="paragraph">
 <p>Notamos que o histograma da imagem original(de cor amarela) tem uma
@@ -756,7 +906,7 @@ os detalhes da figura.</p>
 <p>Segue o código completo:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 7. Codigo 4.1 -Equalização de Histogramas</div>
+<div class="title">Listagem 10. Codigo 4.1 -Equalização de Histogramas</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
 <span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
@@ -868,7 +1018,7 @@ o histograma anterior e o atual, então determinamos esse valor
 como movimento se passar de um numero que determinamos ser 55.</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 8. Codigo 4.2 - Comparando os histogramas</div>
+<div class="title">Listagem 11. Codigo 4.2 - Comparando os histogramas</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp">                Dcomp = compareHist(histR, ant_histR, CV_COMP_INTERSECT);
 
@@ -892,13 +1042,13 @@ como sinalização como demonstrado abaixo.</p>
 <div class="content">
 <img src="42_movimento.png" alt="Circulo Amarelo">
 </div>
-<div class="title">Figure 4. Movimento detectado</div>
+<div class="title">Figure 5. Movimento detectado</div>
 </div>
 <div class="paragraph">
 <p>Segue abaixo o codigo completo:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 9. Codigo 4.1 -Equalização de Histogramas</div>
+<div class="title">Listagem 12. Codigo 4.1 -Equalização de Histogramas</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
 <span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
@@ -1018,7 +1168,7 @@ o resultado com um filtro laplaciano normal tendo como base o código filtroespa
 <p>Foi adicionado o seguinte comando ao switch do programa:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 10. Codigo 5 - Gaussiano</div>
+<div class="title">Listagem 13. Codigo 5 - Gaussiano</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp">        <span style="color:#080;font-weight:bold">switch</span> (key) {
                 <span style="color:#080;font-weight:bold">case</span> <span style="color:#D20">'p'</span>:
@@ -1038,7 +1188,7 @@ para ser usada na imagem, e logo em seguida o filtro gaussiano e laplacianos sao
 da seguinte forma:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 11. Codigo 5 - Laplaciano</div>
+<div class="title">Listagem 14. Codigo 5 - Laplaciano</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp">filter2D(frame32f, frameFiltered, frame32f.depth(), mask, Point(<span style="color:#00D">1</span>, <span style="color:#00D">1</span>), <span style="color:#00D">0</span>);
 
@@ -1057,7 +1207,7 @@ um segundo filtro na imagem, o laplaciano. Segue abaixo os resultados.</p>
 <div class="content">
 <img src="5_lapgaussiano.png" alt="LapGauss">
 </div>
-<div class="title">Figure 5. Laplaciano a direita e LapGauss a esquerda</div>
+<div class="title">Figure 6. Laplaciano a direita e LapGauss a esquerda</div>
 </div>
 <div class="paragraph">
 <p>Nota-se que na imagem com o filtro laplaciano gaussiano aplicado as bordas
@@ -1067,7 +1217,7 @@ estão mais destacadas que o laplaciano simples.</p>
 <p>Segue abaixo o código completo:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 12. Codigo 5 - Laplaciano Gaussiano</div>
+<div class="title">Listagem 15. Codigo 5 - Laplaciano Gaussiano</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
 <span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
@@ -1292,13 +1442,13 @@ precisamos definir o alfa pela seguinte equação:</p>
 <div class="content">
 <img src="tilt-shift.png" alt="tilt shift">
 </div>
-<div class="title">Figure 6. Tilt-Shift</div>
+<div class="title">Figure 7. Tilt-Shift</div>
 </div>
 <div class="paragraph">
 <p>Segue abaixo o código completo:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 13. Código 6 - Tilt-Shift</div>
+<div class="title">Listagem 16. Código 6 - Tilt-Shift</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
 <span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
@@ -1417,7 +1567,7 @@ Mat frame32f, frameFiltered;
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-04-06 00:52:03 Hora PadrÒo de Buenos Aires
+Last updated 2018-04-08 21:35:24 Hora PadrÒo de Buenos Aires
 </div>
 </div>
 </body>
