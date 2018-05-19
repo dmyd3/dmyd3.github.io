@@ -431,6 +431,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Sumário</div>
 <ul class="sectlevel1">
+<li><a href="#_strong_unidade_1_strong"><strong>UNIDADE 1</strong></a></li>
 <li><a href="#_capítulo_2">Capítulo 2</a>
 <ul class="sectlevel2">
 <li><a href="#_exercício_2_1">Exercício 2.1</a></li>
@@ -459,6 +460,13 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_exercício_6_1">Exercício 6.1</a></li>
 </ul>
 </li>
+<li><a href="#_strong_unidade_2_strong"><strong>UNIDADE 2</strong></a></li>
+<li><a href="#_capítulo_8">Capítulo 8</a>
+<ul class="sectlevel2">
+<li><a href="#_exercício_8_canny_e_pontilhismo">Exercício 8 - Canny e Pontilhismo</a></li>
+<li><a href="#_exemplos">Exemplos</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -471,6 +479,12 @@ Dmytres Kelven dos Santos Nunes &lt;<a href="mailto:dmytresksn@hotmail.com">dmyt
 e<br>
 Thúlio Mattheus Pereira de Sousa &lt;<a href="mailto:thuliomattheus@hotmail.com">thuliomattheus@hotmail.com</a>&gt;</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_strong_unidade_1_strong"><strong>UNIDADE 1</strong></h2>
+<div class="sectionbody">
+
 </div>
 </div>
 <div class="sect1">
@@ -1597,10 +1611,148 @@ Mat frame32f, frameFiltered;
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_strong_unidade_2_strong"><strong>UNIDADE 2</strong></h2>
+<div class="sectionbody">
+
+</div>
+</div>
+<div class="sect1">
+<h2 id="_capítulo_8">Capítulo 8</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_8_canny_e_pontilhismo">Exercício 8 - Canny e Pontilhismo</h3>
+<div class="paragraph">
+<p>Neste exercício modificaremos a técnica do pontilhismo para
+ter a ajuda do algoritmo de Canny para obter um resultado
+diferente padrão. Foram usados como base os codigos
+pontilhismo.cpp e canny.cpp dados na tarefa.</p>
+</div>
+<div class="paragraph">
+<p><a href="C:\Users\Edineide\Documents\Projetos\pdi_cap8\pontilhismo.cpp">Pontilhismo.cpp</a>
+<a href="C:\Users\Edineide\Documents\Projetos\pdi_cap8\canny.cpp.cpp">Canny.cpp</a></p>
+</div>
+<div class="paragraph">
+<p>Primeiro o programa realiza o pontilhismo da imagem usando o programa
+base pontilhismo.cpp com circulos grandes, aqui de tamanho 5.</p>
+</div>
+<div class="paragraph">
+<p>Depois é executado o algoritmo de Canny com diferentes limiares minimos
+pre-determinados pelo vetor abaixo, e limiares altos por 3 * limiar_baixo</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 17. Limiares de Canny</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp">vector&lt;<span style="color:#0a8;font-weight:bold">int</span>&gt; limiar_range ={<span style="color:#00D">50</span>,<span style="color:#00D">100</span>,<span style="color:#00D">150</span>,<span style="color:#00D">200</span>};</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Para cada valor de limiar é realizado o pontilhismo apenas nas posições que
+o algoritmo de canny determinou como borda com raios cada vez menores para limiares
+cada vez mais altos.</p>
+</div>
+<div class="paragraph">
+<p>Aqui determinamos 4 valores, então como o raio da imagem pontilhada original
+foi 5, nessa parte do codigo ele assumirá valores de 4 a 1 para os circulos estarem
+sempre menores que os circulos da imagem original e adcionarem maiores detalhes a imagem.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 18. Loop Canny Point</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//Canny e imagem FINAL</span>
+<span style="color:#0a8;font-weight:bold">int</span> s = <span style="color:#00D">1</span>,raio;
+<span style="color:#080;font-weight:bold">for</span> (<span style="color:#088;font-weight:bold">auto</span> limiar : limiar_range) {
+        Canny(image, bordas, limiar, <span style="color:#00D">3</span>*limiar);
+
+        raio = RAIO - s; <span style="color:#777">//faz o raio cada vez menor</span>
+
+        <span style="color:#777">//inicia o pontilhismo</span>
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> h = <span style="color:#00D">1</span>; h &lt; height; h++) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> w = <span style="color:#00D">1</span>; w &lt; width; w++) {
+                        <span style="color:#080;font-weight:bold">if</span> (bordas.at&lt;uchar&gt;(h, w) == <span style="color:#00D">255</span>) {
+                                gray = image.at&lt;uchar&gt;(h, w);
+                                circle(points,
+                                        cv::Point(w, h),
+                                        raio,
+                                        CV_RGB(gray, gray, gray),
+                                        -<span style="color:#00D">1</span>, CV_AA);
+                                circle(frame,
+                                        cv::Point(w, h),
+                                        raio,
+                                        CV_RGB(gray, gray, gray),
+                                        -<span style="color:#00D">1</span>, CV_AA);
+                        }
+                }
+        }
+        s++;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Abaixo uma demonstração do funcionamento do programa usando
+uma imagem em alta resolução da modelo Lena para mostrar como
+o programa reage aos pequenos detalhes.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="8_lenaBIG.png" alt="8 lenaBIG">
+</div>
+<div class="title">Figure 8. Lena Original e pontilhada</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="8_lena_Canny.png" alt="Resultado Lena">
+</div>
+<div class="title">Figure 9. Esquerda-Novos pontos, Direita-Pós Canny</div>
+</div>
+<div class="paragraph">
+<p>Nota-se como a imagem após a aplicação de Canny possui muito
+mais detalhes, e os contornos do chápeu e dos olhos, isso graças aos
+pontos que foram adicionados baseando-se nas bordas achadas por Canny.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exemplos">Exemplos</h3>
+<div class="paragraph">
+<p>Para os exemplos o programa foi modificado para ler e escrever as imagens em cores</p>
+</div>
+<div class="paragraph">
+<p>Exemplo 1 - Usando a imagem <a href="spidey.png">Spidey.PNG</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="8_spider_original.png" alt="8 spider original">
+</div>
+<div class="title">Figure 10. Original e Pontilhada</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="8_spider_canny.png" alt="8 spider canny">
+</div>
+<div class="title">Figure 11. Novos Pontos e Imagem Final</div>
+</div>
+<div class="paragraph">
+<p>Exemplo 2 - Usando a imagem <a href="oculos.png">Oculos.PNG</a></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="8_oculos_original.png" alt="8 oculos original">
+</div>
+<div class="title">Figure 12. Original e Pontilhada</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="8_oculos_canny.png" alt="8 oculos canny">
+</div>
+<div class="title">Figure 13. Novos Pontos e Imagem Final</div>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-04-08 21:46:48 Hora PadrÒo de Buenos Aires
+Last updated 2018-05-19 17:11:00 Hora PadrÒo de Buenos Aires
 </div>
 </div>
 </body>
