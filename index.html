@@ -467,6 +467,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_exemplos">Exemplos</a></li>
 </ul>
 </li>
+<li><a href="#_exercício_9_k_means">Exercício 9 - K-Means</a>
+<ul class="sectlevel2">
+<li><a href="#_exemplos_2">Exemplos</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -1701,7 +1706,7 @@ o programa reage aos pequenos detalhes.</p>
 </div>
 <div class="imageblock">
 <div class="content">
-<img src="8_lena_Canny.png" alt="Resultado Lena">
+<img src="8_lena_canny.png" alt="Resultado Lena">
 </div>
 <div class="title">Figure 9. Esquerda-Novos pontos, Direita-Pós Canny</div>
 </div>
@@ -1746,13 +1751,275 @@ pontos que foram adicionados baseando-se nas bordas achadas por Canny.</p>
 </div>
 <div class="title">Figure 13. Novos Pontos e Imagem Final</div>
 </div>
+<div class="paragraph">
+<p>Segue abaixo o código completo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 19. Código 8 - CannyPoints</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;fstream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iomanip&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;vector&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;algorithm&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;numeric&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;ctime&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;cstdlib&gt;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+
+<span style="color:#579">#define</span> STEP <span style="color:#00D">5</span>
+<span style="color:#579">#define</span> JITTER <span style="color:#00D">2</span>
+<span style="color:#579">#define</span> RAIO <span style="color:#00D">5</span>
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argc, <span style="color:#0a8;font-weight:bold">char</span>** argv) {
+        vector&lt;<span style="color:#0a8;font-weight:bold">int</span>&gt; yrange;
+        vector&lt;<span style="color:#0a8;font-weight:bold">int</span>&gt; xrange;
+        Mat image, frame, points, bordas;
+        <span style="color:#0a8;font-weight:bold">int</span> width, height, gray;
+        <span style="color:#0a8;font-weight:bold">int</span> x, y;
+        <span style="color:#777">//valores dos limiares</span>
+        vector&lt;<span style="color:#0a8;font-weight:bold">int</span>&gt; limiar_range ={<span style="color:#00D">50</span>,<span style="color:#00D">100</span>,<span style="color:#00D">150</span>,<span style="color:#00D">200</span>};<span style="color:#777">//Se o compilador suportar C++11</span>
+        Vec3b val;
+
+        <span style="color:#777">//image = imread(&quot;spidey.png&quot;, CV_LOAD_IMAGE_GRAYSCALE);</span>
+        image = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">spidey.png</span><span style="color:#710">&quot;</span></span>, CV_LOAD_IMAGE_COLOR);
+        srand(time(<span style="color:#00D">0</span>));
+        <span style="color:#777">//srand(0);</span>
+
+        <span style="color:#080;font-weight:bold">if</span> (!image.data) {
+                cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">nao abriu</span><span style="color:#710">&quot;</span></span> &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">a imagem</span><span style="color:#710">&quot;</span></span> &lt;&lt; endl;
+                exit(<span style="color:#00D">0</span>);
+        }
+
+        width = image.size().width;
+        height = image.size().height;
+        xrange.resize(height / STEP);
+        yrange.resize(width / STEP);
+
+        iota(xrange.begin(), xrange.end(), <span style="color:#00D">0</span>);
+        iota(yrange.begin(), yrange.end(), <span style="color:#00D">0</span>);
+
+        <span style="color:#080;font-weight:bold">for</span> (uint i = <span style="color:#00D">0</span>; i&lt;xrange.size(); i++) {
+                xrange[i] = xrange[i] * STEP + STEP / <span style="color:#00D">2</span>;
+        }
+        <span style="color:#080;font-weight:bold">for</span> (uint i = <span style="color:#00D">0</span>; i&lt;yrange.size(); i++) {
+                yrange[i] = yrange[i] * STEP + STEP / <span style="color:#00D">2</span>;
+        }
+
+        <span style="color:#777">//points = Mat(height, width, CV_8U, Scalar(255));</span>
+        <span style="color:#777">//frame = Mat(height, width, CV_8U, Scalar(255));</span>
+        points = Mat(height, width, CV_8UC3, Scalar(<span style="color:#00D">255</span>, <span style="color:#00D">255</span>, <span style="color:#00D">255</span>));
+        frame = Mat(height, width, CV_8UC3, Scalar(<span style="color:#00D">255</span>, <span style="color:#00D">255</span>, <span style="color:#00D">255</span>));
+
+        random_shuffle(xrange.begin(), xrange.end());
+        <span style="color:#777">//Faz a pintura de pontos</span>
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#088;font-weight:bold">auto</span> i : xrange) {
+                random_shuffle(yrange.begin(), yrange.end());
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#088;font-weight:bold">auto</span> j : yrange) {
+                        x = i + rand() % (<span style="color:#00D">2</span> * JITTER) - JITTER + <span style="color:#00D">1</span>;
+                        y = j + rand() % (<span style="color:#00D">2</span> * JITTER) - JITTER + <span style="color:#00D">1</span>;
+                        <span style="color:#777">//gray = image.at&lt;uchar&gt;(x, y);</span>
+                        val[<span style="color:#00D">0</span>] = image.at&lt;Vec3b&gt;(i, j)[<span style="color:#00D">0</span>];
+                        val[<span style="color:#00D">1</span>] = image.at&lt;Vec3b&gt;(i, j)[<span style="color:#00D">1</span>];
+                        val[<span style="color:#00D">2</span>] = image.at&lt;Vec3b&gt;(i, j)[<span style="color:#00D">2</span>];
+                        circle(points,
+                                cv::Point(y, x),
+                                RAIO,
+                                CV_RGB(val[<span style="color:#00D">2</span>], val[<span style="color:#00D">1</span>], val[<span style="color:#00D">0</span>]),
+                                -<span style="color:#00D">1</span>,        CV_AA);
+                }
+        }
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Pontilhada</span><span style="color:#710">&quot;</span></span>, points);
+        imwrite(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">images/SpideyPontos.png</span><span style="color:#710">&quot;</span></span>, points);
+
+        <span style="color:#777">//Canny e imagem FINAL xxxxxxxxxxxxxxxxxxxxxxxxxxxxx</span>
+        <span style="color:#0a8;font-weight:bold">int</span> s = <span style="color:#00D">1</span>,raio;
+
+        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#088;font-weight:bold">auto</span> limiar : limiar_range) {
+                Canny(image, bordas, limiar, <span style="color:#00D">3</span>*limiar);
+
+                raio = RAIO - s;
+
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> h = <span style="color:#00D">1</span>; h &lt; height; h++) {
+                        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> w = <span style="color:#00D">1</span>; w &lt; width; w++) {
+                                <span style="color:#080;font-weight:bold">if</span> (bordas.at&lt;uchar&gt;(h, w) == <span style="color:#00D">255</span>) {
+                                        <span style="color:#777">//gray = image.at&lt;uchar&gt;(h, w);</span>
+                                        val[<span style="color:#00D">0</span>] = image.at&lt;Vec3b&gt;(h, w)[<span style="color:#00D">0</span>];
+                                        val[<span style="color:#00D">1</span>] = image.at&lt;Vec3b&gt;(h, w)[<span style="color:#00D">1</span>];
+                                        val[<span style="color:#00D">2</span>] = image.at&lt;Vec3b&gt;(h, w)[<span style="color:#00D">2</span>];
+
+                                        circle(points,
+                                                        cv::Point(w, h),
+                                                        raio,
+                                                        CV_RGB(val[<span style="color:#00D">2</span>], val[<span style="color:#00D">1</span>], val[<span style="color:#00D">0</span>]),
+                                                        -<span style="color:#00D">1</span>, CV_AA);
+                                        circle(frame,
+                                                cv::Point(w, h),
+                                                raio,
+                                                CV_RGB(val[<span style="color:#00D">2</span>], val[<span style="color:#00D">1</span>], val[<span style="color:#00D">0</span>]),
+                                                -<span style="color:#00D">1</span>, CV_AA);
+                                }
+                        }
+                }
+                s++;
+        }
+        imwrite(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">images/SpideyCP.png</span><span style="color:#710">&quot;</span></span>, points);
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">FINAL</span><span style="color:#710">&quot;</span></span>, points);
+        imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Bordas</span><span style="color:#710">&quot;</span></span>, frame);
+        imwrite(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">images/PontosNovos_Spidey.png</span><span style="color:#710">&quot;</span></span>, frame);
+        waitKey();
+        <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_exercício_9_k_means">Exercício 9 - K-Means</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Nesta tarefa foi realizada o algoritmo K-Means para reduzir a quantidade de cores
+presentes na imagem, classificando todos os pixels da imagem em 6 grupos diferentes,
+cada um representando uma cor. Isso foi feito escolhendo os centros do cluster de
+forma <strong>aleatória</strong> e em apenas <strong>uma rodada</strong> como exigido.</p>
+</div>
+<div class="paragraph">
+<p>Para isso a chamada do K-means ficou da seguinte forma no código:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 20. Execução do K-Means</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#0a8;font-weight:bold">int</span> nRodadas = <span style="color:#00D">1</span>;
+
+kmeans(samples,
+        nClusters,
+        rotulos,
+        TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, <span style="color:#00D">10000</span>, <span style="color:#60E">0</span><span style="color:#60E">.0001</span>),
+        nRodadas,
+        KMEANS_RANDOM_CENTERS,
+        centros);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Após separar os pixels em grupos de centros aleatórios pelo menos 10 vezes de algumas
+imagens, os alguns resultados foram diferentes um dos outros.
+Isso ocorreu por que ao gerar centros aleatorios e executar o algoritmo por apenas
+uma rodada centros de cluster diferentes foram obtidos e em apenas uma rodada o algoritmo
+nao teve chance de corrigir esses centros para se aproximar mais das aglomeraçoes de
+elementos.</p>
+</div>
+<div class="sect2">
+<h3 id="_exemplos_2">Exemplos</h3>
+<div class="paragraph">
+<p>Abaixo estão resultados de 2 imagens. Foram feitos gifs para ajudar na comparaçao entre as
+imagens para perceber melhor as diferenças.</p>
+</div>
+<div class="paragraph">
+<p>Exemplo 1</p>
+</div>
+<div class="paragraph">
+<div class="title">Nascer do Sol</div>
+<p><span class="image"><img src="sky.jpg" alt="sky"></span></p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="skyOUT.gif" alt="skyOUT">
+</div>
+<div class="title">Figure 14. Ex</div>
+</div>
+<div class="paragraph">
+<p>Exemplo 2</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="ferro3.jpg" alt="ferro3">
+</div>
+<div class="title">Figure 15. Homem de Ferro 3</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="ferroOUT.gif" alt="ferroOUT">
+</div>
+<div class="title">Figure 16. iron</div>
+</div>
+<div class="paragraph">
+<p>Segue abaixo o código completo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 21. Código 9 - K-Means</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;cstdlib&gt;</span>
+<span style="color:#777">//#include &lt;string&gt;</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argc, <span style="color:#0a8;font-weight:bold">char</span>** argv) {
+        <span style="color:#0a8;font-weight:bold">int</span> nClusters = <span style="color:#00D">6</span>;
+        Mat rotulos;
+        <span style="color:#0a8;font-weight:bold">int</span> nRodadas = <span style="color:#00D">1</span>;
+        Mat centros;
+
+        stringstream saida_nome;
+        <span style="color:#0a8;font-weight:bold">string</span> saida;
+        <span style="color:#0a8;font-weight:bold">int</span> cont = <span style="color:#00D">0</span>;
+        <span style="color:#777">//if(argc!=3){</span>
+        <span style="color:#777">//        exit(0);</span>
+        <span style="color:#777">// }</span>
+
+        Mat img = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">sky.jpg</span><span style="color:#710">&quot;</span></span>, CV_LOAD_IMAGE_COLOR);
+        Mat samples(img.rows * img.cols, <span style="color:#00D">3</span>, CV_32F);
+
+        <span style="color:#080;font-weight:bold">while</span> (cont &lt; <span style="color:#00D">10</span>) {
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> y = <span style="color:#00D">0</span>; y &lt; img.rows; y++) {
+                        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> x = <span style="color:#00D">0</span>; x &lt; img.cols; x++) {
+                                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> z = <span style="color:#00D">0</span>; z &lt; <span style="color:#00D">3</span>; z++) {
+                                        samples.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(y + x * img.rows, z) = img.at&lt;Vec3b&gt;(y, x)[z];
+                                }
+                        }
+                }
+
+                kmeans(samples,
+                        nClusters,
+                        rotulos,
+                        TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, <span style="color:#00D">10000</span>, <span style="color:#60E">0</span><span style="color:#60E">.0001</span>),
+                        nRodadas,
+                        KMEANS_RANDOM_CENTERS,
+                        centros);
+
+                Mat rotulada(img.size(), img.type());
+                <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> y = <span style="color:#00D">0</span>; y &lt; img.rows; y++) {
+                        <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> x = <span style="color:#00D">0</span>; x &lt; img.cols; x++) {
+                                <span style="color:#0a8;font-weight:bold">int</span> indice = rotulos.at&lt;<span style="color:#0a8;font-weight:bold">int</span>&gt;(y + x * img.rows, <span style="color:#00D">0</span>);
+                                rotulada.at&lt;Vec3b&gt;(y, x)[<span style="color:#00D">0</span>] = (uchar)centros.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(indice, <span style="color:#00D">0</span>);
+                                rotulada.at&lt;Vec3b&gt;(y, x)[<span style="color:#00D">1</span>] = (uchar)centros.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(indice, <span style="color:#00D">1</span>);
+                                rotulada.at&lt;Vec3b&gt;(y, x)[<span style="color:#00D">2</span>] = (uchar)centros.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(indice, <span style="color:#00D">2</span>);
+                        }
+                }
+                saida_nome.str(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#710">&quot;</span></span>); <span style="color:#777">//limpa o string stream</span>
+                saida_nome &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">resultado</span><span style="color:#710">&quot;</span></span> &lt;&lt; cont &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">.png</span><span style="color:#710">&quot;</span></span>;
+                saida = saida_nome.str();
+
+                <span style="color:#777">//imshow(&quot;clustered image 2&quot;, rotulada);</span>
+                imwrite(saida, rotulada);
+                cont++;
+        }
+        <span style="color:#777">//waitKey(0);</span>
+}</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-19 17:11:00 Hora PadrÒo de Buenos Aires
+Last updated 2018-05-19 22:05:48 Hora PadrÒo de Buenos Aires
 </div>
 </div>
 </body>
