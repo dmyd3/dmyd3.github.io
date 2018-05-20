@@ -461,15 +461,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_strong_unidade_2_strong"><strong>UNIDADE 2</strong></a></li>
+<li><a href="#_capítulo_7">Capítulo 7</a>
+<ul class="sectlevel2">
+<li><a href="#_exercício_7_filtro_homomórfico">Exercício 7 - Filtro Homomórfico</a></li>
+<li><a href="#_exemplo">Exemplo</a></li>
+<li><a href="#_codigo_completo">Codigo Completo</a></li>
+</ul>
+</li>
 <li><a href="#_capítulo_8">Capítulo 8</a>
 <ul class="sectlevel2">
 <li><a href="#_exercício_8_canny_e_pontilhismo">Exercício 8 - Canny e Pontilhismo</a></li>
 <li><a href="#_exemplos">Exemplos</a></li>
+<li><a href="#_codigo_completo_2">Codigo Completo</a></li>
 </ul>
 </li>
 <li><a href="#_exercício_9_k_means">Exercício 9 - K-Means</a>
 <ul class="sectlevel2">
 <li><a href="#_exemplos_2">Exemplos</a></li>
+<li><a href="#_codigo_completo_3">Codigo Completo</a></li>
 </ul>
 </li>
 </ul>
@@ -489,7 +498,9 @@ Thúlio Mattheus Pereira de Sousa &lt;<a href="mailto:thuliomattheus@hotmail.com
 <div class="sect1">
 <h2 id="_strong_unidade_1_strong"><strong>UNIDADE 1</strong></h2>
 <div class="sectionbody">
-
+<div class="paragraph">
+<p>Ir para <a href="#_strong_unidade_2_strong"><strong>Unidade 2</strong></a></p>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -1623,6 +1634,320 @@ Mat frame32f, frameFiltered;
 </div>
 </div>
 <div class="sect1">
+<h2 id="_capítulo_7">Capítulo 7</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_exercício_7_filtro_homomórfico">Exercício 7 - Filtro Homomórfico</h3>
+<div class="paragraph">
+<p>Neste exercício implementaremos o filtro homomórfico, afim de se melhorar
+imagens com iluminação irregular. Diversos parâmetros ficarão disponíveis
+por intermédio de uma interface simples, oferecendo um maior controle
+por parte do usuário durante a utilização do filtro.
+Para tanto, utilizaremos como base o programa dft.cpp, dado como referência.</p>
+</div>
+<div class="paragraph">
+<p><a href="dft.cpp">Dft.cpp</a></p>
+</div>
+<div class="paragraph">
+<p>O filtro homomórfico é utilizado para corrigir problemas de iluminação em
+imagens. Ele é definido pela equação :</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="7_equacao_thulio.jpg" alt="filtro" width="500">
+</div>
+</div>
+<div class="paragraph">
+<p>Os parâmetros que o definem são:</p>
+</div>
+<div class="paragraph">
+<p>&#8594; Gama L : Limite mínimo da componente de baixa frequência da imagem (iluminância)</p>
+</div>
+<div class="paragraph">
+<p>&#8594; Gama H : Limite máximo da componente de alta frequência da imagem (reflectância)</p>
+</div>
+<div class="paragraph">
+<p>&#8594; C      : Taxa de velocidade na variação entre as baixas e altas frequências</p>
+</div>
+<div class="paragraph">
+<p>&#8594; D0     : Frequência de corte do espectro</p>
+</div>
+<div class="paragraph">
+<p>Inicialmente, começaremos com uma etapa de pré-processamento, na qual
+realizaremos o padding da imagem, em seguida inicializaremos a matriz complexa
+responsável por guardar as partes real e imaginaria da imagem filtrada.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 17. Pré-Processamento</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">// identifica os tamanhos otimos para</span>
+<span style="color:#777">// calculo do FFT</span>
+dft_M = getOptimalDFTSize(image.rows);
+dft_N = getOptimalDFTSize(image.cols);
+
+<span style="color:#777">// realiza o padding da imagem</span>
+copyMakeBorder(image, padded, <span style="color:#00D">0</span>,
+        dft_M - image.rows, <span style="color:#00D">0</span>,
+        dft_N - image.cols,
+        BORDER_CONSTANT, Scalar::all(<span style="color:#00D">0</span>));
+
+<span style="color:#777">// parte imaginaria da matriz complexa (preenchida com zeros)</span>
+zeros = Mat_&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;::zeros(padded.size());
+
+<span style="color:#777">// prepara a matriz complexa para ser preenchida</span>
+complexImage = Mat(padded.size(), CV_32FC2, Scalar(<span style="color:#00D">0</span>));
+
+<span style="color:#777">// a função de transferência (filtro frequencial) deve ter o</span>
+<span style="color:#777">// mesmo tamanho e tipo da matriz complexa</span>
+filter = complexImage.clone();
+
+<span style="color:#777">// cria uma matriz temporária para criar as componentes real</span>
+<span style="color:#777">// e imaginaria do filtro ideal</span>
+tmp = Mat(dft_M, dft_N, CV_32F);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Após esta etapa, inicializamos os parâmetros do filtro utilizando
+os melhores valores encontrados dentre um conjunto grande de valores testados.</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 18. Inicialização dos parâmetros</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp">c = (<span style="color:#0a8;font-weight:bold">double</span>) c_slider/<span style="color:#00D">100</span> ;
+d0 = (<span style="color:#0a8;font-weight:bold">double</span>) d_zero_slider/<span style="color:#00D">4</span> ;
+gama_l = (<span style="color:#0a8;font-weight:bold">double</span>) gama_l_slider/<span style="color:#00D">100</span> ;
+gama_h = (<span style="color:#0a8;font-weight:bold">double</span>) gama_h_slider/<span style="color:#00D">100</span> ;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Os passos seguintes (mostrados no código mais abaixo)
+foram calcular a dft da imagem, realizar a troca de quadrantes utilizando a função
+deslocaDFT oriunda do arquivo dft.cpp para trazer a origem do sinal para o centro da imagem,
+aplicar o filtro homomórfico, trocar os quadrantes novamente levando a origem
+para as pontas, calcular a dft inversa e normalizar os valores encontrados.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_exemplo">Exemplo</h3>
+<div class="paragraph">
+<p>Nas figuras que seguem, baseadas <a href="7_hall.jpg">nessa imagem</a>, podemos ver como a utilização do filtro pode servir
+para melhorar a iluminação utilizando-se certos valores.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="7_original.jpg" alt="7 original">
+</div>
+<div class="title">Figure 8. Imagem Original em Escalas de Cinza</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="7_filtrada.jpg" alt="7 filtrada">
+</div>
+<div class="title">Figure 9. Imagem Filtrada</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_codigo_completo">Codigo Completo</h3>
+<div class="paragraph">
+<p>Segue abaixo o código completo:</p>
+</div>
+<div class="listingblock">
+<div class="title">Listagem 19. Código 7 - Homomórfico</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
+<span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/imgproc/imgproc.hpp&gt;</span>
+
+<span style="color:#579">#define</span> RADIUS <span style="color:#00D">20</span>
+
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> cv;
+<span style="color:#088;font-weight:bold">using</span> <span style="color:#080;font-weight:bold">namespace</span> std;
+
+Mat imaginaryInput, complexImage, multsp;
+Mat padded, filter;
+Mat image, tmp;
+Mat_&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt; realInput, zeros;
+vector&lt;Mat&gt; planos;
+
+<span style="color:#777">// valores ideais dos tamanhos da imagem</span>
+<span style="color:#777">// para calculo da DFT</span>
+<span style="color:#0a8;font-weight:bold">int</span> dft_M, dft_N;
+
+<span style="color:#0a8;font-weight:bold">double</span> gama_l=<span style="color:#60E">0</span><span style="color:#60E">.5</span>, gama_h=<span style="color:#00D">1</span>, c=<span style="color:#60E">0</span><span style="color:#60E">.2</span>, d0=<span style="color:#60E">0</span><span style="color:#60E">.2</span>;
+
+<span style="color:#0a8;font-weight:bold">int</span> c_slider = <span style="color:#00D">1</span>;
+<span style="color:#0a8;font-weight:bold">int</span> d_zero_slider = <span style="color:#00D">1</span>;
+<span style="color:#0a8;font-weight:bold">int</span> gama_l_slider = <span style="color:#00D">1</span>;
+<span style="color:#0a8;font-weight:bold">int</span> gama_h_slider = <span style="color:#00D">2</span>;
+
+<span style="color:#777">// troca os quadrantes da imagem da DFT</span>
+<span style="color:#088;font-weight:bold">void</span> deslocaDFT(Mat&amp; image ){
+  Mat tmp, A, B, C, D;
+
+  <span style="color:#777">// se a imagem tiver tamanho impar, recorta a regiao para</span>
+  <span style="color:#777">// evitar cópias de tamanho desigual</span>
+  image = image(Rect(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, image.cols &amp; -<span style="color:#00D">2</span>, image.rows &amp; -<span style="color:#00D">2</span>));
+  <span style="color:#0a8;font-weight:bold">int</span> cx = image.cols/<span style="color:#00D">2</span>;
+  <span style="color:#0a8;font-weight:bold">int</span> cy = image.rows/<span style="color:#00D">2</span>;
+
+  <span style="color:#777">// reorganiza os quadrantes da transformada</span>
+  <span style="color:#777">// A B   -&gt;  D C</span>
+  <span style="color:#777">// C D       B A</span>
+  A = image(Rect(<span style="color:#00D">0</span>, <span style="color:#00D">0</span>, cx, cy));
+  B = image(Rect(cx, <span style="color:#00D">0</span>, cx, cy));
+  C = image(Rect(<span style="color:#00D">0</span>, cy, cx, cy));
+  D = image(Rect(cx, cy, cx, cy));
+
+  <span style="color:#777">// A &lt;-&gt; D</span>
+  A.copyTo(tmp);  D.copyTo(A);  tmp.copyTo(D);
+
+  <span style="color:#777">// C &lt;-&gt; B</span>
+  C.copyTo(tmp);  B.copyTo(C);  tmp.copyTo(B);
+}
+
+<span style="color:#088;font-weight:bold">void</span> on_trackbar_homomorfico(<span style="color:#0a8;font-weight:bold">int</span>, <span style="color:#088;font-weight:bold">void</span>*){
+  <span style="color:#080;font-weight:bold">if</span>(c_slider == <span style="color:#00D">0</span>){
+    c_slider=<span style="color:#00D">1</span>;
+  }
+  <span style="color:#080;font-weight:bold">if</span>(d_zero_slider == <span style="color:#00D">0</span>){
+    d_zero_slider=<span style="color:#00D">1</span>;
+  }
+  <span style="color:#080;font-weight:bold">if</span>(gama_l_slider == <span style="color:#00D">0</span>){
+    gama_l_slider=<span style="color:#00D">1</span>;
+  }
+  <span style="color:#080;font-weight:bold">if</span>(gama_h_slider == <span style="color:#00D">0</span>){
+    gama_h_slider=<span style="color:#00D">1</span>;
+  }
+  <span style="color:#080;font-weight:bold">if</span>(gama_l_slider &gt;= gama_h_slider){
+    gama_l_slider = gama_h_slider-<span style="color:#00D">1</span>;
+  }
+  <span style="color:#080;font-weight:bold">if</span>(gama_h_slider &lt;= gama_l_slider){
+    gama_h_slider = gama_l_slider+<span style="color:#00D">1</span>;
+  }
+
+  c = (<span style="color:#0a8;font-weight:bold">double</span>) c_slider/<span style="color:#00D">100</span> ;
+  d0 = (<span style="color:#0a8;font-weight:bold">double</span>) d_zero_slider/<span style="color:#00D">4</span> ;
+  gama_l = (<span style="color:#0a8;font-weight:bold">double</span>) gama_l_slider/<span style="color:#00D">100</span> ;
+  gama_h = (<span style="color:#0a8;font-weight:bold">double</span>) gama_h_slider/<span style="color:#00D">100</span> ;
+
+  <span style="color:#777">// limpa o array de matrizes que vao compor a</span>
+  <span style="color:#777">// imagem complexa</span>
+  planos.clear();
+  <span style="color:#777">// cria a componente real</span>
+  realInput = Mat_&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;(padded);
+  <span style="color:#777">// insere as duas componentes no array de matrizes</span>
+  planos.push_back(realInput);
+  planos.push_back(zeros);
+
+  <span style="color:#777">// combina o array de matrizes em uma unica</span>
+  <span style="color:#777">// componente complexa</span>
+  merge(planos, complexImage);
+
+  <span style="color:#777">// calcula o dft</span>
+  dft(complexImage, complexImage);
+
+  <span style="color:#777">// realiza a troca de quadrantes</span>
+  deslocaDFT(complexImage);
+
+  <span style="color:#777">// prepara o filtro homomorfico</span>
+  <span style="color:#080;font-weight:bold">for</span>(<span style="color:#0a8;font-weight:bold">int</span> i=<span style="color:#00D">0</span>; i&lt;dft_M; i++){
+    <span style="color:#080;font-weight:bold">for</span>(<span style="color:#0a8;font-weight:bold">int</span> j=<span style="color:#00D">0</span>; j&lt;dft_N; j++){
+        tmp.at&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt; (i,j) = (gama_h-gama_l)*(<span style="color:#60E">1</span><span style="color:#60E">.0</span> - exp(-c* ((i-dft_M/<span style="color:#00D">2</span>)*(i-dft_M/<span style="color:#00D">2</span>)+(j-dft_N/<span style="color:#00D">2</span>)*(j-dft_N/<span style="color:#00D">2</span>))/(d0*d0) )) + gama_l;
+    }
+  }
+
+  <span style="color:#777">// cria a matriz com as componentes do filtro e junta</span>
+  <span style="color:#777">// ambas em uma matriz multicanal complexa</span>
+  Mat comps[]= {tmp, tmp};
+  merge(comps, <span style="color:#00D">2</span>, filter);
+
+  <span style="color:#777">// aplica o filtro frequencial</span>
+  mulSpectrums(complexImage,filter,complexImage,<span style="color:#00D">0</span>);
+
+  <span style="color:#777">// troca novamente os quadrantes</span>
+  deslocaDFT(complexImage);
+  <span style="color:#777">// calcula a DFT inversa</span>
+  idft(complexImage, complexImage);
+  <span style="color:#777">// limpa o array de planos</span>
+  planos.clear();
+  <span style="color:#777">// separa as partes real e imaginaria da</span>
+  <span style="color:#777">// imagem filtrada</span>
+  split(complexImage, planos);
+  <span style="color:#777">// normaliza a parte real para exibicao</span>
+  normalize(planos[<span style="color:#00D">0</span>], planos[<span style="color:#00D">0</span>], <span style="color:#00D">0</span>, <span style="color:#00D">1</span>, CV_MINMAX);
+
+  imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Filtrada</span><span style="color:#710">&quot;</span></span>, planos[<span style="color:#00D">0</span>]);
+}
+
+<span style="color:#0a8;font-weight:bold">int</span> main(<span style="color:#0a8;font-weight:bold">int</span> argc, <span style="color:#0a8;font-weight:bold">char</span>** argv){
+  <span style="color:#777">// guarda tecla capturada</span>
+  <span style="color:#0a8;font-weight:bold">char</span> key;
+
+  namedWindow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Original</span><span style="color:#710">&quot;</span></span>, WINDOW_NORMAL);
+  namedWindow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Filtrada</span><span style="color:#710">&quot;</span></span>, WINDOW_NORMAL);
+
+  <span style="color:#777">// Salva a imagem na variavel image</span>
+  image = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">hall.jpg</span><span style="color:#710">&quot;</span></span>, CV_LOAD_IMAGE_GRAYSCALE);
+  <span style="color:#080;font-weight:bold">if</span>(!image.data){
+                cout &lt;&lt; <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">A imagem nao pode ser aberta</span><span style="color:#710">&quot;</span></span> &lt;&lt; endl;
+        }
+
+  <span style="color:#777">// Mostra a imagem original</span>
+  imshow(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Original</span><span style="color:#710">&quot;</span></span>, image);
+
+  <span style="color:#777">// identifica os tamanhos otimos para</span>
+  <span style="color:#777">// calculo do FFT</span>
+  dft_M = getOptimalDFTSize(image.rows);
+  dft_N = getOptimalDFTSize(image.cols);
+
+  <span style="color:#777">// realiza o padding da imagem</span>
+  copyMakeBorder(image, padded, <span style="color:#00D">0</span>,
+    dft_M - image.rows, <span style="color:#00D">0</span>,
+    dft_N - image.cols,
+    BORDER_CONSTANT, Scalar::all(<span style="color:#00D">0</span>));
+
+  <span style="color:#777">// parte imaginaria da matriz complexa (preenchida com zeros)</span>
+  zeros = Mat_&lt;<span style="color:#0a8;font-weight:bold">float</span>&gt;::zeros(padded.size());
+
+  <span style="color:#777">// prepara a matriz complexa para ser preenchida</span>
+  complexImage = Mat(padded.size(), CV_32FC2, Scalar(<span style="color:#00D">0</span>));
+
+  <span style="color:#777">// a função de transferência (filtro frequencial) deve ter o</span>
+  <span style="color:#777">// mesmo tamanho e tipo da matriz complexa</span>
+  filter = complexImage.clone();
+
+  <span style="color:#777">// cria uma matriz temporária para criar as componentes real</span>
+  <span style="color:#777">// e imaginaria do filtro ideal</span>
+  tmp = Mat(dft_M, dft_N, CV_32F);
+
+  createTrackbar( <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Gama H</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Filtrada</span><span style="color:#710">&quot;</span></span>,
+  &amp;gama_h_slider, <span style="color:#00D">100</span>, on_trackbar_homomorfico);
+
+  createTrackbar( <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Gama L</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Filtrada</span><span style="color:#710">&quot;</span></span>,
+  &amp;gama_l_slider, <span style="color:#00D">100</span>, on_trackbar_homomorfico);
+
+  createTrackbar( <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">D0</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Filtrada</span><span style="color:#710">&quot;</span></span>,
+  &amp;d_zero_slider, <span style="color:#00D">100</span>, on_trackbar_homomorfico);
+
+  createTrackbar( <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">C</span><span style="color:#710">&quot;</span></span>, <span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">Filtrada</span><span style="color:#710">&quot;</span></span>,
+  &amp;c_slider, <span style="color:#00D">100</span>, on_trackbar_homomorfico);
+
+  on_trackbar_homomorfico(<span style="color:#00D">100</span>, <span style="color:#069">NULL</span>);
+
+  <span style="color:#080;font-weight:bold">while</span>(<span style="color:#00D">1</span>){
+
+    key = (<span style="color:#0a8;font-weight:bold">char</span>) waitKey(<span style="color:#00D">10</span>);
+    <span style="color:#080;font-weight:bold">if</span>( key == <span style="color:#00D">27</span> ) <span style="color:#080;font-weight:bold">break</span>; <span style="color:#777">// Pressione ESC</span>
+  }
+
+  <span style="color:#080;font-weight:bold">return</span> <span style="color:#00D">0</span>;
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
 <h2 id="_capítulo_8">Capítulo 8</h2>
 <div class="sectionbody">
 <div class="sect2">
@@ -1646,7 +1971,7 @@ base pontilhismo.cpp com circulos grandes, aqui de tamanho 5.</p>
 pre-determinados pelo vetor abaixo, e limiares altos por 3 * limiar_baixo</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 17. Limiares de Canny</div>
+<div class="title">Listagem 20. Limiares de Canny</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp">vector&lt;<span style="color:#0a8;font-weight:bold">int</span>&gt; limiar_range ={<span style="color:#00D">50</span>,<span style="color:#00D">100</span>,<span style="color:#00D">150</span>,<span style="color:#00D">200</span>};</code></pre>
 </div>
@@ -1662,7 +1987,7 @@ foi 5, nessa parte do codigo ele assumirá valores de 4 a 1 para os circulos est
 sempre menores que os circulos da imagem original e adcionarem maiores detalhes a imagem.</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 18. Loop Canny Point</div>
+<div class="title">Listagem 21. Loop Canny Point</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#777">//Canny e imagem FINAL</span>
 <span style="color:#0a8;font-weight:bold">int</span> s = <span style="color:#00D">1</span>,raio;
@@ -1702,13 +2027,13 @@ o programa reage aos pequenos detalhes.</p>
 <div class="content">
 <img src="8_lenaBIG.png" alt="8 lenaBIG">
 </div>
-<div class="title">Figure 8. Lena Original e pontilhada</div>
+<div class="title">Figure 10. Lena Original e pontilhada</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="8_lena_canny.png" alt="Resultado Lena">
 </div>
-<div class="title">Figure 9. Esquerda-Novos pontos, Direita-Pós Canny</div>
+<div class="title">Figure 11. Esquerda-Novos pontos, Direita-Pós Canny</div>
 </div>
 <div class="paragraph">
 <p>Nota-se como a imagem após a aplicação de Canny possui muito
@@ -1728,13 +2053,13 @@ pontos que foram adicionados baseando-se nas bordas achadas por Canny.</p>
 <div class="content">
 <img src="8_spider_original.png" alt="8 spider original">
 </div>
-<div class="title">Figure 10. Original e Pontilhada</div>
+<div class="title">Figure 12. Original e Pontilhada</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="8_spider_canny.png" alt="8 spider canny">
 </div>
-<div class="title">Figure 11. Novos Pontos e Imagem Final</div>
+<div class="title">Figure 13. Novos Pontos e Imagem Final</div>
 </div>
 <div class="paragraph">
 <p>Exemplo 2 - Usando a imagem <a href="oculos.png">Oculos.PNG</a></p>
@@ -1743,19 +2068,22 @@ pontos que foram adicionados baseando-se nas bordas achadas por Canny.</p>
 <div class="content">
 <img src="8_oculos_original.png" alt="8 oculos original">
 </div>
-<div class="title">Figure 12. Original e Pontilhada</div>
+<div class="title">Figure 14. Original e Pontilhada</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="8_oculos_canny.png" alt="8 oculos canny">
 </div>
-<div class="title">Figure 13. Novos Pontos e Imagem Final</div>
+<div class="title">Figure 15. Novos Pontos e Imagem Final</div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_codigo_completo_2">Codigo Completo</h3>
 <div class="paragraph">
 <p>Segue abaixo o código completo:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 19. Código 8 - CannyPoints</div>
+<div class="title">Listagem 22. Código 8 - CannyPoints</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;iostream&gt;</span>
 <span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
@@ -1891,7 +2219,7 @@ forma <strong>aleatória</strong> e em apenas <strong>uma rodada</strong> como e
 <p>Para isso a chamada do K-means ficou da seguinte forma no código:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 20. Execução do K-Means</div>
+<div class="title">Listagem 23. Execução do K-Means</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#0a8;font-weight:bold">int</span> nRodadas = <span style="color:#00D">1</span>;
 
@@ -1919,7 +2247,7 @@ elementos.</p>
 imagens para perceber melhor as diferenças.</p>
 </div>
 <div class="paragraph">
-<p>Exemplo 1</p>
+<p>Exemplo 1 - <a href="sky.jpg">Sky.jpg</a></p>
 </div>
 <div class="paragraph">
 <div class="title">Nascer do Sol</div>
@@ -1929,28 +2257,31 @@ imagens para perceber melhor as diferenças.</p>
 <div class="content">
 <img src="skyOUT.gif" alt="skyOUT">
 </div>
-<div class="title">Figure 14. Ex</div>
+<div class="title">Figure 16. Resultado do Sol</div>
 </div>
 <div class="paragraph">
-<p>Exemplo 2</p>
+<p>Exemplo 2 - <a href="ferro3.jpg">IronMan.jpg</a></p>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="ferro3.jpg" alt="ferro3">
 </div>
-<div class="title">Figure 15. Homem de Ferro 3</div>
+<div class="title">Figure 17. Homem de Ferro 3</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="ferroOUT.gif" alt="ferroOUT">
 </div>
-<div class="title">Figure 16. iron</div>
+<div class="title">Figure 18. Resultado de Ferro</div>
 </div>
+</div>
+<div class="sect2">
+<h3 id="_codigo_completo_3">Codigo Completo</h3>
 <div class="paragraph">
 <p>Segue abaixo o código completo:</p>
 </div>
 <div class="listingblock">
-<div class="title">Listagem 21. Código 9 - K-Means</div>
+<div class="title">Listagem 24. Código 9 - K-Means</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="cpp"><span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;opencv2/opencv.hpp&gt;</span>
 <span style="color:#579">#include</span> <span style="color:#B44;font-weight:bold">&lt;cstdlib&gt;</span>
@@ -1975,7 +2306,7 @@ imagens para perceber melhor as diferenças.</p>
         Mat img = imread(<span style="background-color:hsla(0,100%,50%,0.05)"><span style="color:#710">&quot;</span><span style="color:#D20">sky.jpg</span><span style="color:#710">&quot;</span></span>, CV_LOAD_IMAGE_COLOR);
         Mat samples(img.rows * img.cols, <span style="color:#00D">3</span>, CV_32F);
 
-        <span style="color:#080;font-weight:bold">while</span> (cont &lt; <span style="color:#00D">10</span>) {
+        <span style="color:#080;font-weight:bold">while</span> (cont &lt; <span style="color:#00D">20</span>) {
                 <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> y = <span style="color:#00D">0</span>; y &lt; img.rows; y++) {
                         <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> x = <span style="color:#00D">0</span>; x &lt; img.cols; x++) {
                                 <span style="color:#080;font-weight:bold">for</span> (<span style="color:#0a8;font-weight:bold">int</span> z = <span style="color:#00D">0</span>; z &lt; <span style="color:#00D">3</span>; z++) {
@@ -2019,7 +2350,7 @@ imagens para perceber melhor as diferenças.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2018-05-19 22:05:48 Hora PadrÒo de Buenos Aires
+Last updated 2018-05-19 23:38:03 Hora PadrÒo de Buenos Aires
 </div>
 </div>
 </body>
